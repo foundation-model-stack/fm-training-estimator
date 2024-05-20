@@ -1,2 +1,3 @@
 wheel
 tox
+pre-commit
