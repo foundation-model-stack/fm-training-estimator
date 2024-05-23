@@ -1,3 +1,5 @@
 wheel
 tox
 pre-commit
+transformers
+peft
