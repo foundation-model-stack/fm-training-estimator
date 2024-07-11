@@ -1,0 +1,6 @@
+{
+    "base_model_path": "ibm-granite/granite-8b-code-base",
+    "torch_dtype": "float16",
+    "fsdp": "full_shard",
+    "numGpusPerPod": 4
+}
