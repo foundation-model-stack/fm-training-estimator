@@ -52,6 +52,8 @@ class InfraArguments:
         metadata={"help": ("number of pods requested")},
     )
 
+    gpu_memory_in_gb: int = field(default=80, metadata={"help": ("GPU RAM in GBs")})
+
 
 @dataclass
 class FMArguments:

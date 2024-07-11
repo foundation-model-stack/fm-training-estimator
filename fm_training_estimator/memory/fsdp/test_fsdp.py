@@ -5,10 +5,12 @@ from .fsdp import FSDPEstimator
 
 
 def test_fsdp():
-    fm, ta = parse({"base_model_path": "ibm-granite/granite-8b-code-base"})
+    fm, ta, ia = parse(
+        {"base_model_path": "ibm-granite/granite-8b-code-base", "gpu_memory_in_gb": 80}
+    )
 
     base = FullParameterTuningEstimator(fm, ta)
-    est = FSDPEstimator(fm, ta, base, 1024 * 1024 * 1024 * 80)
+    est = FSDPEstimator(fm, ta, base, 1024 * 1024 * 1024 * ia.gpu_memory_in_gb)
 
     est.set_number_of_gpus(1)
     mm1 = est.calculate_model_memory()
