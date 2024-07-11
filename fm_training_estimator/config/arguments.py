@@ -58,7 +58,7 @@ class FMArguments:
     """dataclass to store additional args not covered by standard HF argument dataclasses"""
 
     base_model_path: str = field(
-        default="/data/models/granite20b/",
+        default="ibm-granite/granite-3b-code-base",
         metadata={
             "help": (
                 "Base Model location. Can be empty if output path has a checkpoint."
@@ -78,6 +78,11 @@ class FMArguments:
     max_seq_length: int = field(
         default=2048,
         metadata={"help": ("model max sequence length.")},
+    )
+
+    block_size: int = field(
+        default=2048,
+        metadata={"help": ("Sequence length.")},
     )
 
     data_config_file: str = field(
