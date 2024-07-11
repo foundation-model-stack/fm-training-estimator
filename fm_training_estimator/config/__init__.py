@@ -7,6 +7,7 @@ from .arguments import (
     PeftPromptTuningConfig,
 )
 from .parser import parse
+from .utils import is_fsdp
 
 __all__ = [
     "FMArguments",
@@ -15,4 +16,5 @@ __all__ = [
     "HFTrainingArguments",
     "InfraArguments",
     "parse",
+    "is_fsdp",
 ]
