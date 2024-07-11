@@ -33,6 +33,10 @@ class HFTrainingArguments(TrainingArguments):
         TrainingArguments (_type_): directly imported from transformers library
     """
 
+    output_dir: str = field(
+        default="./output", metadata={"help": ("temporary output dir for HF")}
+    )
+
 
 @dataclass
 class InfraArguments:

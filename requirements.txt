@@ -3,3 +3,4 @@ tox
 pre-commit
 transformers
 peft
+setuptools

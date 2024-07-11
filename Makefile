@@ -14,6 +14,10 @@ fmt:
 lint:
 	tox -e lint
 
+.PHONY: test
+test:
+	tox -e test
+
 .PHONY: hook
 hook:
 	pre-commit install --hook-type commit-msg

@@ -6,21 +6,10 @@ from transformers import HfArgumentParser
 
 # Local
 from ..utils import logger, unmarshal
-from .arguments import (
-    FMArguments,
-    PeftLoraConfig,
-    PeftPromptTuningConfig,
-    TrainingArguments,
-)
-
-arg_parser = HfArgumentParser(
-    [FMArguments, TrainingArguments, PeftLoraConfig, PeftPromptTuningConfig]
-)
+from .arguments import FMArguments, HFTrainingArguments
 
 
-def parse(
-    config: Union[Dict, str]
-) -> Tuple[FMArguments, TrainingArguments, PeftLoraConfig, PeftPromptTuningConfig]:
+def parse(config: Union[Dict, str]) -> Tuple[FMArguments, HFTrainingArguments]:
     """parse config and return respective dataclass objects
 
     Args:
@@ -40,8 +29,9 @@ def parse(
             )
         if isinstance(config, str):
             config = unmarshal(config)
-        elif isinstance(config, Dict):
-            return arg_parser.parse_dict(config)
+
+        arg_parser = HfArgumentParser([FMArguments, HFTrainingArguments])
+        return arg_parser.parse_dict(config)
     except Exception as e:  # pylint: disable=broad-except
         logger.error(
             "failed to parse the provided arguments from config {config}. error : \
