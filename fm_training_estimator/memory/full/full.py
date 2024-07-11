@@ -88,14 +88,15 @@ class FullParameterTuningEstimator:
         # peripheral_size = ((s*b*h*l) / t) * ((p / l) + ((p * 4 / l) * (1 + (v/h))))
         # print(fmt_size(peripheral_size))
         size = transformer_block_size
-        if self.precision == "fp32":
+        multiplier = 1
+        if self.precision == "float32":
             multiplier = 2
-        elif self.precision == "fp16" or self.precision == "bfloat16":
+        elif self.precision == "float16" or self.precision == "bfloat16":
             multiplier = 1
         # print(s, b, h, l)
         # print(fmt_size(19 * s * b * h * l))
         size = size * multiplier
-        print(fmt_size(size / l))
+        # print(fmt_size(size / l))
         if readable:
             return fmt_size(size)
         return size
@@ -126,9 +127,9 @@ class FullParameterTuningEstimator:
         # TODO: gradient may not be in the same precision as the model
         # NOTE: there could be mixed precision as well
         # for mixed precision it is still fp32 computation
-        if self.precision == "fp32":
+        if self.precision == "float32":
             multiplier = 4
-        elif self.precision == "fp16" or self.precision == "bfloat16":
+        elif self.precision == "float16" or self.precision == "bfloat16":
             multiplier = 2
         else:
             print("no support for the precision")
@@ -154,9 +155,9 @@ class FullParameterTuningEstimator:
         ## TODO: should detect 8-bit adamw if being used and compute
         if self.optimizer == OptimizerNames.ADAMW_TORCH or OptimizerNames.ADAMW_HF:
             # optimizer state is funciton of gradients/parameters dtype
-            if self.precision == "fp32":
+            if self.precision == "float32":
                 multiplier = 8
-            elif self.precision == "fp16" or self.precision == "bfloat16":
+            elif self.precision == "float16" or self.precision == "bfloat16":
                 multiplier = 4
         elif self.optimizer == OptimizerNames.SGD:
             multiplier = 4

@@ -4,3 +4,4 @@ pre-commit
 transformers
 peft
 setuptools
+fire
