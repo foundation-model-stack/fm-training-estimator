@@ -5,3 +5,6 @@ transformers
 peft
 setuptools
 fire
+pandas
+xgboost
+scikit-learn
