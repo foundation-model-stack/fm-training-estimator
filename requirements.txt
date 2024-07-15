@@ -8,3 +8,4 @@ fire
 pandas
 xgboost
 scikit-learn
+gradio
