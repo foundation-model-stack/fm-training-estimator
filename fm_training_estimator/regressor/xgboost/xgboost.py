@@ -4,7 +4,7 @@ import pandas
 
 
 class XGBoostRegressor:
-    def __init__(self):
+    def __init__(self, model_path=None):
         self.model = XGBRegressor(
             n_estimators=40,
             max_depth=7,
@@ -13,6 +13,9 @@ class XGBoostRegressor:
             colsample_bytree=0.8,
             enable_categorical=True,
         )
+
+        if model_path is not None:
+            self.load(model_path)
 
     def load(self, model_path):
         self.model.load_model(model_path)

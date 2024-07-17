@@ -4,7 +4,7 @@ from pathlib import Path
 # Local
 from .xgboost import XGBoostRegressor
 
-test_data1 = (Path(__file__).parent / "./test_data/data1.csv").as_posix()
+test_data1 = (Path(__file__).parent / "../test_data/data1.csv").as_posix()
 
 
 def test_reg_lifecycle(tmp_path):
@@ -14,7 +14,7 @@ def test_reg_lifecycle(tmp_path):
 
     # train the model - and use it directly
     # includes saving to file
-    reg.train(test_data1, model_path, ["train_tokens_per_second"])
+    reg.train(test_data1, model_path, ["tokens_per_second"])
     out = reg.run(["mercury-12b", "X100", 2, 4, 512])
     assert int(out[0]) < 1000
 

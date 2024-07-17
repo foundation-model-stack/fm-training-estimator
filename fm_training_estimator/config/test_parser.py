@@ -13,12 +13,18 @@ def test_parse_empty_dict():
 
 
 def test_parse_dict():
-    config = {"max_seq_length": 1023, "gpu_memory_in_gb": 40, "block_size": 1023}
-    fm, _, ia = parse(config)
+    config = {
+        "max_seq_length": 1023,
+        "gpu_memory_in_gb": 40,
+        "block_size": 1023,
+        "per_device_train_batch_size": 2,
+    }
+    fm, ta, ia = parse(config)
 
     assert fm.max_seq_length == 1023
     assert ia.gpu_memory_in_gb == 40
     assert fm.block_size == 1023
+    assert ta.per_device_train_batch_size == 2
 
 
 def test_parse_file():
