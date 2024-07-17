@@ -3,8 +3,11 @@ import pandas
 
 
 class LookupRegressor:
-    def __init__(self):
+    def __init__(self, data_path=None):
         self.data = None
+
+        if data_path is not None:
+            self.load(data_path)
 
     def load(self, data_path):
         self.data = pandas.read_csv(data_path)
