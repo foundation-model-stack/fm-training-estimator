@@ -1,3 +1,6 @@
+# Standard
+import logging
+
 # Third Party
 import fire
 
@@ -5,4 +8,5 @@ import fire
 from .core import run
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     fire.Fire(run)

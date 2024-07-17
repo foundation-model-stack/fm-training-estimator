@@ -1,7 +1,9 @@
+# Standard
+import logging
+
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
 from ...regressor import LookupRegressor, XGBoostRegressor
-from ...utils import fmt_size
 from ..fsdp import FSDPEstimator
 from ..full import FullParameterTuningEstimator
 
@@ -16,6 +18,8 @@ class HybridEstimator:
         model_path,
     ):
 
+        logging.info("Hybrid Estimator: Initializing")
+
         self.fm = fm_args
         self.ta = train_args
         self.ia = infra_args
@@ -23,6 +27,7 @@ class HybridEstimator:
         self.full_est = FullParameterTuningEstimator(fm_args, train_args)
 
         if not is_fsdp(train_args):
+            self.fsdp_enabled = False
             return
 
         # FSDP related logic
@@ -38,9 +43,16 @@ class HybridEstimator:
             self.fsdp_est.set_number_of_gpus(self.ia.numGpusPerPod)
 
         # Lookup based estimator
-        self.lookup_est = LookupRegressor(lookup_data_path)
+        if lookup_data_path is not None:
+            self.lookup_est = LookupRegressor(lookup_data_path)
+        else:
+            self.lookup_est = None
+
         # Model based estimator
-        self.reg_est = XGBoostRegressor(model_path)
+        if model_path is not None:
+            self.reg_est = XGBoostRegressor(model_path)
+        else:
+            self.reg_est = None
 
     def lookup_mem(self):
         res = self.lookup_est.run(
@@ -60,6 +72,12 @@ class HybridEstimator:
     def calculate_activation_memory(self):
         if not self.fsdp_enabled:
             return self.full_est.calculate_activation_memory()
+
+        if self.reg_est is None:
+            logging.info("Hybrid: Skipping Regression")
+            return self.fsdp_est.calculate_activation_memory()
+
+        logging.info("Hybrid: Attempting Regression")
 
         params = [
             self.fm.base_model_path,
@@ -90,16 +108,19 @@ class HybridEstimator:
 
         return self.fsdp_est.calculate_optimizer_memory()
 
-    def get_total_mem_estimate(self, readable: bool = False):
+    def get_total_mem_estimate(self):
         if not self.fsdp_enabled:
-            return self.full_est.get_total_mem_estimate(readable)
+            return self.full_est.get_total_mem_estimate()
 
         # simple lookup
-        lookup_mem = self.lookup_mem()
-        if lookup_mem is not None:
-            if readable:
-                return fmt_size(lookup_mem)
-            return lookup_mem
+        if self.lookup_est is not None:
+            logging.info("Hybrid: attempting lookup")
+            lookup_mem = self.lookup_mem()
+            if lookup_mem is not None:
+                logging.info("Lookup: match found")
+                return lookup_mem
+
+        logging.info("Hybrid: lookup failed")
 
         size = (
             self.calculate_activation_memory()
@@ -108,6 +129,4 @@ class HybridEstimator:
             + self.fsdp_est.calculate_optimizer_memory()
         )
 
-        if readable:
-            return fmt_size(size)
         return size
