@@ -13,7 +13,7 @@ def test_hybrid(tmp_path):
 
     model_path = tmp_path / "test.model.json"
     reg = XGBoostRegressor()
-    reg.train(test_data2, model_path, ["tokens_per_second", "memory"])
+    reg.train(test_data2, model_path, ["tokens_per_second", "memory", "memory_act"])
 
     fm, ta, ia = parse(
         {
@@ -42,5 +42,11 @@ def test_hybrid(tmp_path):
     )
 
     est = HybridEstimator(fm, ta, ia, test_data2, model_path)
-    # Lookup fails - uses normal theory estimator
-    assert est.get_total_mem_estimate() >= 50 * 1024 * 1024 * 1024
+    # Lookup fails - uses Reg based approach
+    assert est.get_total_mem_estimate() >= 10 * 1024 * 1024 * 1024
+
+    grad_mem = est.calculate_gradient_memory()
+    model_mem = est.calculate_model_memory()
+    assert grad_mem >= 7 * 1024 * 1024 * 1024
+    assert model_mem >= 7 * 1024 * 1024 * 1024
+    assert grad_mem == model_mem
