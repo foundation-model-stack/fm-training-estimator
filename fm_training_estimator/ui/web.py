@@ -5,6 +5,10 @@ import gradio as gr
 # Local
 from .core import run
 
+# control variables
+conf_model_path = None
+conf_data_path = None
+
 # list of white-listed models
 model_list = []
 # stores the current configuration specified in the ui as json
@@ -49,19 +53,25 @@ def estimate(*args):
     config = to_config(*args)
     conf_store.value = config
 
-    return [config, run(config)]
+    return [config, run(config, conf_data_path, conf_model_path)]
 
 
-def web(model_whitelist=None, port=3000):
+def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
     """
     model_whitelist: path to a text file, with a list of models to show in the dropdown
     port: Port to start the webserver on
+    data_path: Path to data file for lookup
+    model_path: Path to model file with regression model
     """
 
     global model_list
     if model_whitelist is not None:
         with open(model_whitelist, "r") as wl:
             model_list = wl.read().splitlines()
+
+    global conf_data_path, conf_model_path
+    conf_data_path = data_path
+    conf_model_path = model_path
 
     with gr.Blocks(title="fm-training-estimator") as demo:
         with gr.Row():

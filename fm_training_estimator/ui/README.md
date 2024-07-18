@@ -33,3 +33,12 @@ to enable white listing of models, you can pass in the path of a txt file with o
 ```
 python -m fm_training_estimator.ui.web ./model_whitelist.txt
 ```
+
+To enable lookup and regression based hybrid estimator:
+```
+python -m fm_training_estimator.ui.web ./model_whitelist.txt \
+                                       ../regressor/test_data/data2.csv \
+                                       ../../test.model.json
+```
+
+As with the cli version, first train the model to use.
