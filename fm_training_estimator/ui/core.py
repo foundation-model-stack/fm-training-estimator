@@ -1,6 +1,7 @@
 # Local
 from ..config import is_fsdp, parse
 from ..memory import HybridEstimator
+from ..throughput import MockSpeedEstimator
 from ..utils import fmt_size
 
 
@@ -25,5 +26,8 @@ def run(config, lookup_data_path=None, model_path=None):
 
     if is_fsdp(ta):
         res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
+
+    speed_est = MockSpeedEstimator(fm, seed=10)
+    res["tps"] = f"{speed_est.get_tps()} tokens/sec"
 
     return res

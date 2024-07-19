@@ -153,7 +153,7 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
                     technique,
                 ]
             with gr.Column():
-                outputs = gr.JSON(label="Predicted Memory")
+                outputs = gr.JSON(label="Predicted Resources")
 
         submit_btn.click(estimate, inputs=inputs, outputs=[conf, outputs])
         to_conf_btn.click(update_conf, inputs=inputs, outputs=conf)
