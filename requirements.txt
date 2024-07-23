@@ -9,3 +9,4 @@ pandas
 xgboost
 scikit-learn
 gradio
+datasets

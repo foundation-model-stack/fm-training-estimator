@@ -105,3 +105,28 @@ class FMArguments:
             )
         },
     )
+
+
+@dataclass
+class DataArguments:
+    te_approach: int = field(
+        default=0, metadata={"help": ("Approach to use for Token Estimation")}
+    )
+
+    dataset: str = field(
+        default=None, metadata={"help": ("name of HF dataset or path to json file")}
+    )
+
+    dataset_text_field: str = field(
+        default="text", metadata={"help": ("field of the dataset to use")}
+    )
+
+    dataset_split: str = field(
+        default="test",
+        metadata={"help": ("dataset split to use, in case of HF dataset")},
+    )
+
+    dataset_config_name: str = field(
+        default=None,
+        metadata={"help": ("dataset configuration to use, in case of HF dataset")},
+    )

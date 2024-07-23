@@ -15,7 +15,7 @@ def test_hybrid(tmp_path):
     reg = XGBoostRegressor()
     reg.train(test_data2, model_path, ["tokens_per_second", "memory", "memory_act"])
 
-    fm, ta, ia = parse(
+    fm, ta, ia, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-7b-base",
             "gpu_memory_in_gb": 80,
@@ -30,7 +30,7 @@ def test_hybrid(tmp_path):
     # Direct lookup example
     assert est.get_total_mem_estimate() == 20
 
-    fm, ta, ia = parse(
+    fm, ta, ia, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-7b-base",
             "gpu_memory_in_gb": 80,

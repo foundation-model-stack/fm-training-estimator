@@ -8,7 +8,7 @@ from ..utils import fmt_size
 def run(config, lookup_data_path=None, model_path=None):
 
     res = {}
-    fm, ta, ia = parse(config)
+    fm, ta, ia, _ = parse(config)
 
     est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)
 

@@ -13,14 +13,14 @@ test_data2 = (Path(__file__).parent / "../../regressor/test_data/data2.csv").as_
 
 
 def test_hybrid_empty():
-    fm, ta, ia = parse({})
+    fm, ta, ia, _ = parse({})
 
     with raises(RuntimeError):
         _ = HybridSpeedEstimator(fm, ta, ia, None, None)
 
 
 def test_hybrid_lookup():
-    fm, ta, ia = parse(
+    fm, ta, ia, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-7b-base",
             "per_device_train_batch_size": 4,
@@ -39,7 +39,7 @@ def test_hybrid_reg(tmp_path):
     reg = XGBoostRegressor()
     reg.train(test_data2, model_path, ["tokens_per_second", "memory", "memory_act"])
 
-    fm, ta, ia = parse(
+    fm, ta, ia, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-7b-base",
             "per_device_train_batch_size": 4,
