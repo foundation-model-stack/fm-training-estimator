@@ -1,14 +1,47 @@
 # FM Training Estimator
-Estimators for Large Language Model Training
+
+Estimators for Large Language Model Training.
+
+Estimate resource consumption - memory, tokens, time etc for training and fine-tuning jobs using an hybrid of theory and learned regression models.
+
+## Feature Matrix and Roadmap
+
+| Technique          | Support            |
+|--------------------|--------------------|
+| Full (1 gpu)       | :heavy_check_mark: |
+| FSDP (multi)       | :heavy_check_mark: |
+| PT (1 gpu)         | Coming soon        |
+| Lora (1 gpu)       | Coming soon        |
+| QLora (1 gpu)      | Planned            |
+| Speculators        | Planned            |
+| Tensor Parallelism | Planned            |
+
+### Time
+
+Full learned approach. Coverage based on availability of training data.
+
+### Memory
+
+Hybrid theory + learned. Coverage of learned approach is subject to availability of training data.
+
+### Tokens
+
+Fully theory. Simulation based models available.
+
+| Technique | Explanation                                    | Availability       |
+|-----------|------------------------------------------------|--------------------|
+| TE0       | Simulation based - slow but accurate           | :heavy_check_mark: |
+| TE1       | Statistical                                    | Planned            |
+| TE2       | Approximate - fast, light, reasonable accurate | Coming soon        |
 
 ## Usage
 
-### Setup
-
-First install:
+### Install
 ```
 make install
 ```
+
+### Setup
 
 Now, prepare data in the expected format for lookup and regression. Look at the csv files in `./fm_training_estimator/regressor/test_data/` for examples. Save this file into `./workdir/data.csv`.
 
