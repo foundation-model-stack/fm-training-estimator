@@ -67,7 +67,7 @@ class HybridEstimator:
         if res.empty:
             return None
 
-        return res["memory"][0]
+        return res["memory"][0:1].item()
 
     def calculate_activation_memory(self):
         if not self.fsdp_enabled:

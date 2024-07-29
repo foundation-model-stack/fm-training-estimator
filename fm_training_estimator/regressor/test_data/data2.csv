@@ -1,5 +1,6 @@
 model_name,number_gpus,batch_size,seq_len,tokens_per_second,memory,memory_act
 ibm-granite/granite-7b-base,2,4,512,500,20,10
+ibm-granite/granite-7b-base,2,4,1024,1000,20,10
 ibm-granite/granite-7b-base,2,8,512,500,20,10
 ibm-granite/granite-7b-base,2,16,512,500,20,10
 ibm-granite/granite-7b-base,4,4,1024,500,20,10
