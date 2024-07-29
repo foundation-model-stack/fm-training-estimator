@@ -1,0 +1,9 @@
+{
+    "base_model_path": "ibm-granite/granite-7b-base",
+    "torch_dtype": "float16",
+    "fsdp": "full_shard",
+    "numGpusPerPod": 2,
+    "per_device_train_batch_size": 5,
+    "block_size": 512,
+    "dataset": "imdb"
+}

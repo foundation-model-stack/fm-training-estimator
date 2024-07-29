@@ -2,13 +2,14 @@
 from ..config import is_fsdp, parse
 from ..memory import HybridEstimator
 from ..throughput import HybridSpeedEstimator
+from ..tokens import TokenEstimator0
 from ..utils import fmt_size
 
 
 def run(config, lookup_data_path=None, model_path=None):
 
     res = {}
-    fm, ta, ia, _ = parse(config)
+    fm, ta, ia, da = parse(config)
 
     est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)
 
@@ -29,5 +30,15 @@ def run(config, lookup_data_path=None, model_path=None):
 
     speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
     res["tps"] = f"{speed_est.get_tps()} tokens/sec"
+
+    token_est = None
+    if da.te_approach == 0:
+        token_est = TokenEstimator0(da)
+
+    if token_est is not None:
+        res["tokens_per_sample"] = token_est.get_estimated_batch_width(
+            ta.per_device_train_batch_size
+        )
+        res["total_tokens"] = token_est.get_total_tokens()
 
     return res

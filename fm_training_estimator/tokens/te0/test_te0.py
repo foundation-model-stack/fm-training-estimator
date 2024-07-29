@@ -21,9 +21,6 @@ def test_te_raw_hf_dataset():
         }
     )
 
-    # dataset = load_dataset("super_glue", "axb", split="test")
-    # te = TokenEstimator0(dataset, "sentence1")
-
     te = TokenEstimator0(da)
 
     assert te.get_num_samples() == 1104, "Number of samples in data should match"
