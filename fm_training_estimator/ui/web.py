@@ -24,6 +24,11 @@ def to_config(
     num_gpus,
     gpu_mem,
     technique,
+    token_est_approach,
+    dataset,
+    dataset_field,
+    dataset_split,
+    dataset_config,
 ):
     config = {
         "base_model_path": base_model_path,
@@ -32,6 +37,10 @@ def to_config(
         "torch_dtype": model_precision,
         "numGpusPerPod": num_gpus,
         "gpu_memory_in_gb": gpu_mem,
+        "dataset": dataset,
+        "dataset_text_field": dataset_field,
+        "dataset_split": dataset_split,
+        "dataset_config_name": dataset_config,
     }
 
     if config["numGpusPerPod"] == 0:
@@ -39,6 +48,12 @@ def to_config(
 
     if technique == "fsdp":
         config["fsdp"] = "full_shard"
+
+    match token_est_approach:
+        case "disabled":
+            config["te_approach"] = -1
+        case "0":
+            config["te_approach"] = 0
 
     conf_store.value = config
     return config
@@ -138,6 +153,34 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
 
                 technique.change(update_num_gpus, technique, num_gpus)
 
+                with gr.Row():
+                    with gr.Column():
+
+                        token_est_approach = gr.Dropdown(
+                            ["disabled", "0"],
+                            value="disabled",
+                            label="Token Estimation Approach",
+                        )
+
+                        dataset = gr.Textbox(
+                            label="Dataset"
+                        )
+
+                        dataset_field = gr.Textbox(
+                            label="Dataset Field",
+                            value="text",
+                            info="field to use during training"
+                        )
+
+                        dataset_split = gr.Textbox(
+                            label="Dataset Split",
+                            value="test"
+                        )
+
+                        dataset_config = gr.Textbox(
+                            label="Dataset Config"
+                        )
+
                 submit_btn = gr.Button("Submit")
                 to_conf_btn = gr.Button("Gen Config")
 
@@ -151,6 +194,11 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
                     num_gpus,
                     gpu_mem,
                     technique,
+                    token_est_approach,
+                    dataset,
+                    dataset_field,
+                    dataset_split,
+                    dataset_config,
                 ]
             with gr.Column():
                 outputs = gr.JSON(label="Predicted Resources")
