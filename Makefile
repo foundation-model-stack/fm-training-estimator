@@ -21,3 +21,11 @@ test:
 .PHONY: hook
 hook:
 	pre-commit install --hook-type commit-msg
+
+.PHONY: build-model
+build-model:
+	python -m fm_training_estimator.regressor.xgboost.train ./workdir/data.csv ./workdir/model.json '["tokens_per_second","memory","memory_act"]'
+
+.PHONY: run-web-ui
+run-web-ui:
+	python -m fm_training_estimator.ui.web ./workdir/model_whitelist.txt  ./workdir/data.csv ./workdir/model.json
