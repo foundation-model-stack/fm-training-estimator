@@ -163,23 +163,19 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
                         )
 
                         dataset = gr.Textbox(
-                            label="Dataset"
+                            label="Dataset",
+                            info="name/path of dataset in HF datasets format"
                         )
 
                         dataset_field = gr.Textbox(
                             label="Dataset Field",
                             value="text",
-                            info="field to use during training"
+                            info="field to use during training",
                         )
 
-                        dataset_split = gr.Textbox(
-                            label="Dataset Split",
-                            value="test"
-                        )
+                        dataset_split = gr.Textbox(label="Dataset Split", value="test")
 
-                        dataset_config = gr.Textbox(
-                            label="Dataset Config"
-                        )
+                        dataset_config = gr.Textbox(label="Dataset Config")
 
                 submit_btn = gr.Button("Submit")
                 to_conf_btn = gr.Button("Gen Config")

@@ -28,17 +28,22 @@ def run(config, lookup_data_path=None, model_path=None):
     if is_fsdp(ta):
         res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
 
-    speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
-    res["tps"] = f"{speed_est.get_tps()} tokens/sec"
-
     token_est = None
     if da.te_approach == 0:
         token_est = TokenEstimator0(da)
+
+    speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
+    res["tps"] = speed_est.get_tps()
 
     if token_est is not None:
         res["tokens_per_sample"] = token_est.get_estimated_batch_width(
             ta.per_device_train_batch_size
         )
         res["total_tokens"] = token_est.get_total_tokens()
+
+        # get the update tps for this estimate token width
+        res["tps"] = speed_est.get_tps(res["tokens_per_sample"])
+
+        res["time"] = res["total_tokens"] / res["tps"]
 
     return res
