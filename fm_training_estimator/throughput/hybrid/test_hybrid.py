@@ -32,6 +32,8 @@ def test_hybrid_lookup():
     est = HybridSpeedEstimator(fm, ta, ia, test_data2, None)
 
     assert est.get_tps() == 500
+    # test lookup approach
+    assert est.get_tps(1024) == 1000
 
 
 def test_hybrid_reg(tmp_path):

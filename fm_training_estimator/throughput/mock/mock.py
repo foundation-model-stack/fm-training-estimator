@@ -15,6 +15,8 @@ class MockSpeedEstimator:
         else:
             self.seed = time.time()
 
-    def get_tps(self):
-        random.seed(self.seed + self.fm.block_size)
+    def get_tps(self, seqlen=None):
+        if seqlen is None:
+            seqlen = self.fm.block_size
+        random.seed(self.seed + seqlen)
         return random.randint(100, 10000)

@@ -36,27 +36,31 @@ class HybridSpeedEstimator:
             )
             raise RuntimeError("HybridSpeedEstimator not properly initialized")
 
-    def check_lookup(self):
+    def check_lookup(self, seqlen):
         res = self.lookup_est.run(
             {
                 "model_name": self.fm.base_model_path,
                 "number_gpus": self.ia.numGpusPerPod,
                 "batch_size": self.ta.per_device_train_batch_size,
-                "seq_len": self.fm.block_size,
+                "seq_len": seqlen,
             }
         )
 
         if res.empty:
             return None
 
-        return res["tokens_per_second"][0]
+        logging.info(res)
+        return res[0:1]["tokens_per_second"].item()
 
-    def get_tps(self):
+    def get_tps(self, seqlen=None):
+        if seqlen is None:
+            seqlen = self.fm.block_size
+
         res = None
 
         # attempt lookup
         if self.lookup_est is not None:
-            res = self.check_lookup()
+            res = self.check_lookup(seqlen)
             if res is not None:
                 return res
 
@@ -68,7 +72,7 @@ class HybridSpeedEstimator:
             self.fm.base_model_path,
             self.ia.numGpusPerPod,
             self.ta.per_device_train_batch_size,
-            self.fm.block_size,
+            seqlen,
         ]
         res = self.reg_est.run(params)
 
