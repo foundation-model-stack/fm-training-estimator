@@ -4,7 +4,6 @@ import json
 import math
 
 # Third Party
-from transformers import AutoConfig
 from transformers.utils import logging
 import yaml
 
@@ -87,21 +86,3 @@ def fmt_size(size: int) -> str:
         size /= 1024.0
 
     return f"{size:.1f} PiB"
-
-
-def get_model_max_length(model_path: str) -> int:
-    """return model's max sequence length by looking up its config
-
-    Args:
-        model_path (str): model path on filesystem or hugging face id
-
-    Returns:
-        int: max sequence length
-    """
-    config = AutoConfig.from_pretrained(model_path)
-    n_positions = 4096
-    if hasattr(config, "n_positions"):
-        n_positions = config.n_positions
-    elif hasattr(config, "max_position_embeddings"):
-        n_positions = config.max_position_embeddings
-    return n_positions

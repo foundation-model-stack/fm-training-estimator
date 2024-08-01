@@ -4,6 +4,7 @@ import logging
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
 from ...regressor import LookupRegressor, XGBoostRegressor
+from ...utils import extract_model_features
 from ..fsdp import FSDPEstimator
 from ..full import FullParameterTuningEstimator
 
@@ -16,6 +17,7 @@ class HybridEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
+        use_model_features=False,
     ):
 
         logging.info("Hybrid Estimator: Initializing")
@@ -23,6 +25,8 @@ class HybridEstimator:
         self.fm = fm_args
         self.ta = train_args
         self.ia = infra_args
+
+        self.use_model_features = use_model_features
 
         self.full_est = FullParameterTuningEstimator(fm_args, train_args)
 
@@ -55,14 +59,18 @@ class HybridEstimator:
             self.reg_est = None
 
     def lookup_mem(self):
-        res = self.lookup_est.run(
-            {
-                "model_name": self.fm.base_model_path,
-                "number_gpus": self.ia.numGpusPerPod,
-                "batch_size": self.ta.per_device_train_batch_size,
-                "seq_len": self.fm.block_size,
-            }
-        )
+        lookup_query = {
+            "model_name": self.fm.base_model_path,
+            "number_gpus": self.ia.numGpusPerPod,
+            "batch_size": self.ta.per_device_train_batch_size,
+            "seq_len": self.fm.block_size,
+        }
+
+        if self.use_model_features:
+            model_name = lookup_query.pop("model_name")
+            lookup_query = lookup_query | extract_model_features(model_name)
+
+        res = self.lookup_est.run(lookup_query)
 
         if res.empty:
             return None
@@ -85,6 +93,11 @@ class HybridEstimator:
             self.ta.per_device_train_batch_size,
             self.fm.block_size,
         ]
+
+        if self.use_model_features:
+            model_name = params[0]
+            params = params[1:] + extract_model_features(model_name, fmt="list")
+
         res = self.reg_est.run(params)
 
         # activation memory are 3rd entry in the list

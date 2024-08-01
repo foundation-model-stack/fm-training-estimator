@@ -1,0 +1,4 @@
+model_arch,model_hidden_size,model_intermediate_size,model_num_attn_heads,model_num_hidden_layers,model_num_key_value_heads,number_gpus,batch_size,seq_len,tokens_per_second,memory,memory_act
+LlamaForCausalLM,2560,10240,32,32,32,4,16,1024,500,20,10
+LlamaForCausalLM,4096,11008,32,32,32,4,16,1024,500,20,10
+
