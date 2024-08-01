@@ -4,6 +4,7 @@ import logging
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments
 from ...regressor import LookupRegressor, XGBoostRegressor
+from ...utils import extract_model_features
 
 
 class HybridSpeedEstimator:
@@ -14,6 +15,7 @@ class HybridSpeedEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
+        use_model_features=False,
     ):
 
         self.fm = fm_args
@@ -21,6 +23,8 @@ class HybridSpeedEstimator:
         self.ia = infra_args
         self.lookup_est = None
         self.reg_est = None
+
+        self.use_model_features = use_model_features
 
         # Lookup based estimator
         if lookup_data_path is not None:
@@ -37,14 +41,18 @@ class HybridSpeedEstimator:
             raise RuntimeError("HybridSpeedEstimator not properly initialized")
 
     def check_lookup(self, seqlen):
-        res = self.lookup_est.run(
-            {
-                "model_name": self.fm.base_model_path,
-                "number_gpus": self.ia.numGpusPerPod,
-                "batch_size": self.ta.per_device_train_batch_size,
-                "seq_len": seqlen,
-            }
-        )
+        lookup_query = {
+            "model_name": self.fm.base_model_path,
+            "number_gpus": self.ia.numGpusPerPod,
+            "batch_size": self.ta.per_device_train_batch_size,
+            "seq_len": seqlen,
+        }
+
+        if self.use_model_features:
+            model_name = lookup_query.pop("model_name")
+            lookup_query = lookup_query | extract_model_features(model_name)
+
+        res = self.lookup_est.run(lookup_query)
 
         if res.empty:
             return None
@@ -74,6 +82,11 @@ class HybridSpeedEstimator:
             self.ta.per_device_train_batch_size,
             seqlen,
         ]
+
+        if self.use_model_features:
+            model_name = params[0]
+            params = params[1:] + extract_model_features(model_name, fmt="list")
+
         res = self.reg_est.run(params)
 
         # tps is 1st entry in the list
