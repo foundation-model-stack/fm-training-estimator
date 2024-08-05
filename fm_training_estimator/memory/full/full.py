@@ -88,6 +88,10 @@ class FullParameterTuningEstimator:
         # peripheral_size = ((s*b*h*l) / t) * ((p / l) + ((p * 4 / l) * (1 + (v/h))))
         # print(fmt_size(peripheral_size))
         size = transformer_block_size
+
+        if self.train_args.gradient_checkpointing:
+            size /= self.l
+
         multiplier = 1
         if self.precision == "float32":
             multiplier = 2

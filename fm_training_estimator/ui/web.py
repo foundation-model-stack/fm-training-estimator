@@ -21,6 +21,7 @@ def to_config(
     block_size,
     batch_size,
     model_precision,
+    grad_checkpoint,
     num_gpus,
     gpu_mem,
     technique,
@@ -35,6 +36,7 @@ def to_config(
         "block_size": block_size,
         "per_device_train_batch_size": batch_size,
         "torch_dtype": model_precision,
+        "gradient_checkpointing": grad_checkpoint,
         "numGpusPerPod": num_gpus,
         "gpu_memory_in_gb": gpu_mem,
         "dataset": dataset,
@@ -127,6 +129,12 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
                     value="bfloat16",
                 )
 
+                grad_checkpoint = gr.Checkbox(
+                    label="Gradient Checkpointing Enabled?",
+                    info="(Experimental Feature)",
+                    value=False,
+                )
+
                 num_gpus = gr.Slider(
                     label="Number of GPUs",
                     info="set to 0 to auto-detect",
@@ -164,7 +172,7 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
 
                         dataset = gr.Textbox(
                             label="Dataset",
-                            info="name/path of dataset in HF datasets format"
+                            info="name/path of dataset in HF datasets format",
                         )
 
                         dataset_field = gr.Textbox(
@@ -187,6 +195,7 @@ def web(model_whitelist=None, data_path=None, model_path=None, port=3000):
                     block_size,
                     batch_size,
                     model_precision,
+                    grad_checkpoint,
                     num_gpus,
                     gpu_mem,
                     technique,

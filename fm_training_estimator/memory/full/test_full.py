@@ -35,3 +35,19 @@ def test_half_precision():
     mm = est.calculate_model_memory()
     assert mm > 10 * 1_000_000_000
     assert mm < 20 * 1_000_000_000
+
+
+def test_gradient_checkpointing():
+    fm, ta, _, _ = parse(
+        {
+            "base_model_path": "ibm-granite/granite-8b-code-base",
+        }
+    )
+    est1 = FullParameterTuningEstimator(fm, ta)
+    mm1 = est1.calculate_activation_memory()
+
+    ta.gradient_checkpointing = True
+    est2 = FullParameterTuningEstimator(fm, ta)
+    mm2 = est2.calculate_activation_memory()
+
+    assert mm2 * 10 < mm1
