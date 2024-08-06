@@ -6,12 +6,12 @@ from ..tokens import TokenEstimator0
 from ..utils import fmt_size
 
 
-def run(config, lookup_data_path=None, model_path=None):
+def run(config, lookup_data_path=None, model_path=None, use_model_features=True):
 
     res = {}
     fm, ta, ia, da = parse(config)
 
-    est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)
+    est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path, use_model_features)
 
     res["total_mem_estimate_og"] = est.get_total_mem_estimate()
     res["activation_memory_og"] = est.calculate_activation_memory()
@@ -32,7 +32,9 @@ def run(config, lookup_data_path=None, model_path=None):
     if da.te_approach == 0:
         token_est = TokenEstimator0(da)
 
-    speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
+    speed_est = HybridSpeedEstimator(
+        fm, ta, ia, lookup_data_path, model_path, use_model_features
+    )
     res["tps"] = speed_est.get_tps()
 
     if token_est is not None:
