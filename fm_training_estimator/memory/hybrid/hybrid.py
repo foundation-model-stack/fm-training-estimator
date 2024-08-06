@@ -43,8 +43,7 @@ class HybridEstimator:
             infra_args.gpu_memory_in_gb * 1024 * 1024 * 1024,
         )
 
-        if self.ia.numGpusPerPod is not None:
-            self.fsdp_est.set_number_of_gpus(self.ia.numGpusPerPod)
+        self.fsdp_est.set_number_of_gpus(self.ia.numGpusPerPod)
 
         # Lookup based estimator
         if lookup_data_path is not None:
@@ -57,6 +56,32 @@ class HybridEstimator:
             self.reg_est = XGBoostRegressor(model_path)
         else:
             self.reg_est = None
+
+        # auto-discover?
+        if self.ia.numGpusPerPod == 0:
+            self.auto_discover_num_gpus()
+
+    def auto_discover_num_gpus(self):
+        """Discover the number of gpus needed - by guess and emperical validation."""
+        logging.info("Attempting auto discovery of num gpus...")
+
+        guess = self.fsdp_est.estimate_number_of_gpus()
+        trials = 10
+
+        while trials > 0:
+            self.fsdp_est.set_number_of_gpus(guess)
+            mem = self.get_total_mem_estimate()
+
+            # acceptable memory configuration found
+            if mem < self.ia.gpu_memory_in_gb * 1024**3:
+                logging.info("..finalized num of gpus to: {}".format(guess))
+                return
+
+            guess += 1
+            trials -= 1
+
+        logging.warning("No suitable num gpus found!")
+        self.fsdp_est.set_number_of_gpus(0)
 
     def lookup_mem(self):
         lookup_query = {
@@ -101,7 +126,15 @@ class HybridEstimator:
         res = self.reg_est.run(params)
 
         # activation memory are 3rd entry in the list
-        return res[0][2]
+        act = res[0][2]
+
+        logging.info(
+            "Activation, from regression: {}, from theory: {}".format(
+                act, self.fsdp_est.calculate_activation_memory()
+            )
+        )
+
+        return act
 
     def calculate_gradient_memory(self):
         if not self.fsdp_enabled:

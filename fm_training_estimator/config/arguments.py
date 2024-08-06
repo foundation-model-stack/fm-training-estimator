@@ -43,7 +43,7 @@ class InfraArguments:
     """dataclass for infrastructure arguments"""
 
     numGpusPerPod: int = field(
-        default=1,
+        default=-1,
         metadata={"help": ("number of gpus requested per pod")},
     )
 

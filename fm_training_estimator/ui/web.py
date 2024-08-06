@@ -46,9 +46,6 @@ def to_config(
         "dataset_config_name": dataset_config,
     }
 
-    if config["numGpusPerPod"] == 0:
-        del config["numGpusPerPod"]
-
     if technique == "fsdp":
         config["fsdp"] = "full_shard"
 
