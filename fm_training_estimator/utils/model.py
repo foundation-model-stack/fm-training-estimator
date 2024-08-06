@@ -40,11 +40,41 @@ def extract_model_features(model, fmt="dict"):
         # need to refactor code out from Full Memory Estimator class
 
         res["model_arch"] = conf["architectures"][0]
-        res["model_hidden_size"] = conf["hidden_size"]
-        res["model_intermediate_size"] = conf["intermediate_size"]
-        res["model_num_attn_heads"] = conf["num_attention_heads"]
-        res["model_num_hidden_layers"] = conf["num_hidden_layers"]
-        res["model_num_key_value_heads"] = conf["num_key_value_heads"]
+
+        if "hidden_size" in conf:
+            res["model_hidden_size"] = conf["hidden_size"]
+        elif "n_embd" in conf:
+            res["model_hidden_size"] = conf["n_embd"]
+        elif "n_embed" in conf:
+            res["model_hidden_size"] = conf["n_embed"]
+        else:
+            res["model_hidden_size"] = -1
+
+        if "intermediate_size" in conf:
+            res["model_intermediate_size"] = conf["intermediate_size"]
+        elif "n_inner" in conf:
+            res["model_intermediate_size"] = conf["n_inner"]
+        else:
+            res["model_intermediate_size"] = -1
+
+        if "num_attention_heads" in conf:
+            res["model_num_attn_heads"] = conf["num_attention_heads"]
+        elif "n_head" in conf:
+            res["model_num_attn_heads"] = conf["n_head"]
+        else:
+            res["model_num_attn_heads"] = -1
+
+        if "num_hidden_layers" in conf:
+            res["model_num_hidden_layers"] = conf["num_hidden_layers"]
+        elif "n_layer" in conf:
+            res["model_num_hidden_layers"] = conf["n_layer"]
+        else:
+            res["model_num_hidden_layers"] = -1
+
+        if "num_key_value_heads" in conf:
+            res["model_num_key_value_heads"] = conf["num_key_value_heads"]
+        else:
+            res["model_num_key_value_heads"] = res["model_num_attn_heads"]
 
     except Exception as e:
         logging.error(e)
