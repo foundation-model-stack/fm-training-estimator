@@ -12,9 +12,6 @@ conf_umf = True
 
 # list of white-listed models
 model_list = []
-# stores the current configuration specified in the ui as json
-# this json can be used as-is with the cli
-conf_store = gr.State(value={})
 
 
 def to_config(
@@ -55,7 +52,6 @@ def to_config(
         case "0":
             config["te_approach"] = 0
 
-    conf_store.value = config
     return config
 
 
@@ -65,10 +61,19 @@ def update_conf(*args):
 
 
 def estimate(*args):
-    config = to_config(*args)
-    conf_store.value = config
+    prev_out = args[-1]
+    prev_conf = args[-2]
+    args = args[:-2]
 
-    return [config, run(config, conf_data_path, conf_model_path, conf_umf)]
+    config = to_config(*args)
+    # conf_store.value = config
+
+    return [
+        config,
+        run(config, conf_data_path, conf_model_path, conf_umf),
+        prev_conf,
+        prev_out,
+    ]
 
 
 def web(
@@ -194,8 +199,6 @@ def web(
                 submit_btn = gr.Button("Submit")
                 to_conf_btn = gr.Button("Gen Config")
 
-                conf = gr.JSON(label="Conf")
-
                 inputs = [
                     base_model_path,
                     block_size,
@@ -212,9 +215,21 @@ def web(
                     dataset_config,
                 ]
             with gr.Column():
-                outputs = gr.JSON(label="Predicted Resources")
+                with gr.Accordion("Configuration"):
+                    conf = gr.JSON(label="Conf")
+                with gr.Accordion("Estimation"):
+                    outputs = gr.JSON(label="Predicted Resources")
 
-        submit_btn.click(estimate, inputs=inputs, outputs=[conf, outputs])
+                with gr.Accordion("Previous Configuration"):
+                    prev_conf = gr.JSON(label="Prev Conf")
+                with gr.Accordion("Previous Estimation"):
+                    prev_outputs = gr.JSON(label="Prev Predicted Resources")
+
+        submit_btn.click(
+            estimate,
+            inputs=inputs + [conf, outputs],
+            outputs=[conf, outputs, prev_conf, prev_outputs],
+        )
         to_conf_btn.click(update_conf, inputs=inputs, outputs=conf)
 
     demo.queue()
