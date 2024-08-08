@@ -233,7 +233,7 @@ def web(
         to_conf_btn.click(update_conf, inputs=inputs, outputs=conf)
 
     demo.queue()
-    demo.launch(server_port=port)
+    demo.launch(server_name="0.0.0.0", server_port=port)
 
 
 if __name__ == "__main__":
