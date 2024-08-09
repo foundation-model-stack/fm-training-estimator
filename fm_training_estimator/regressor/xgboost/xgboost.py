@@ -6,7 +6,7 @@ import pandas
 class XGBoostRegressor:
     def __init__(self, model_path=None):
         self.model = XGBRegressor(
-            n_estimators=40,
+            n_estimators=400,
             max_depth=7,
             eta=0.1,
             subsample=0.7,

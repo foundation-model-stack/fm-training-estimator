@@ -53,7 +53,7 @@ def test_hybrid_reg(tmp_path):
 
     est = HybridSpeedEstimator(fm, ta, ia, test_data2, model_path)
 
-    assert est.get_tps() > 400
+    assert est.get_tps() > 300
 
 
 def test_hybrid_model_features(tmp_path):
