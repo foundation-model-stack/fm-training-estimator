@@ -121,7 +121,7 @@ class HybridEstimator:
 
         if self.use_model_features:
             model_name = params[0]
-            params = params[1:] + extract_model_features(model_name, fmt="list")
+            params =  extract_model_features(model_name, fmt="list") + params[1:]
 
         res = self.reg_est.run(params)
 
