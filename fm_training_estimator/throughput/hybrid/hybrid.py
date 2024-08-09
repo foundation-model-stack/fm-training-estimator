@@ -80,12 +80,12 @@ class HybridSpeedEstimator:
             self.fm.base_model_path,
             self.ia.numGpusPerPod,
             self.ta.per_device_train_batch_size,
-            seqlen,
+            int(seqlen),
         ]
 
         if self.use_model_features:
             model_name = params[0]
-            params = params[1:] + extract_model_features(model_name, fmt="list")
+            params = extract_model_features(model_name, fmt="list") + params[1:]
 
         res = self.reg_est.run(params)
 
