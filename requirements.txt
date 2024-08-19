@@ -10,3 +10,4 @@ xgboost
 scikit-learn
 gradio
 datasets
+uvicorn

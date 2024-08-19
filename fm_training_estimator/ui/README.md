@@ -40,6 +40,19 @@ python -m fm_training_estimator.ui.cli \
 ```
 `config2.json` is an example of the setup where Lookup would work. `config3.json` is an example where lookup will fail and the system will fall back to regression.
 
+## api
+
+Run the api:
+```
+make run-api
+```
+
+Now, you can get an estimate for the config using something like the following:
+```
+curl localhost:3000/api/estimate -d@<filename>
+```
+Notice that the request is a POST, since we need to pass in config json as a request body.
+
 ## web
 
 To use the web ui:
