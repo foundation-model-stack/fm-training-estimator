@@ -1,8 +1,10 @@
 # Third Party
 import fire
 import gradio as gr
+import uvicorn
 
 # Local
+from .api import api
 from .core import run
 
 # control variables
@@ -82,6 +84,7 @@ def web(
     model_path=None,
     port=3000,
     use_model_features=True,
+    enable_api=False,
 ):
     """
     model_whitelist: path to a text file, with a list of models to show in the dropdown
@@ -89,6 +92,7 @@ def web(
     data_path: Path to data file for lookup
     model_path: Path to model file with regression model
     use_model_features: whether to use model name or features as the keys for lookup and regression
+    enable_api: whether to enable the api as a part of this ui
     """
 
     global model_list
@@ -232,8 +236,13 @@ def web(
         )
         to_conf_btn.click(update_conf, inputs=inputs, outputs=conf)
 
-    demo.queue()
-    demo.launch(server_name="0.0.0.0", server_port=port)
+    if enable_api:
+        app = api(data_path, model_path, use_model_features)
+        gr.mount_gradio_app(app, demo, path="/")
+        uvicorn.run(app, host="0.0.0.0", port=port)
+    else:
+        demo.queue()
+        demo.launch(server_name="0.0.0.0", server_port=port)
 
 
 if __name__ == "__main__":

@@ -28,7 +28,7 @@ build-model:
 
 .PHONY: run-web-ui
 run-web-ui:
-	python -m fm_training_estimator.ui.web ./workdir/model_whitelist.txt ./workdir/data.csv ./workdir/model.json --use_model_features=True
+	python -m fm_training_estimator.ui.web ./workdir/model_whitelist.txt ./workdir/data.csv ./workdir/model.json --use_model_features=True --enable_api=True
 
 .PHONY: run-cli
 run-cli:
