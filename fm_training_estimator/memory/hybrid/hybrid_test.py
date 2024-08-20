@@ -70,7 +70,7 @@ def test_use_model_features(tmp_path):
         }
     )
 
-    est = HybridEstimator(fm, ta, ia, test_data3, None, use_model_features=True)
+    est = HybridEstimator(fm, ta, ia, test_data3, None)
 
     # Direct lookup example should work as before
     assert est.get_total_mem_estimate() == 20
@@ -86,7 +86,7 @@ def test_use_model_features(tmp_path):
         }
     )
 
-    est = HybridEstimator(fm, ta, ia, test_data3, model_path, use_model_features=True)
+    est = HybridEstimator(fm, ta, ia, test_data3, model_path)
 
     # Regression - based on model params
     # though we have only input model name here, we get predictions based on it's features

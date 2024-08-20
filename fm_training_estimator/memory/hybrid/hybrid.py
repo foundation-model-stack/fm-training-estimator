@@ -18,7 +18,6 @@ class HybridEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
-        use_model_features=False,
     ):
 
         logging.info("Hybrid Estimator: Initializing")

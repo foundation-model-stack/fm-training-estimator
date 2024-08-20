@@ -16,7 +16,6 @@ class HybridSpeedEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
-        use_model_features=False,
     ):
 
         self.fm = fm_args
@@ -24,8 +23,6 @@ class HybridSpeedEstimator:
         self.ia = infra_args
         self.lookup_est = None
         self.reg_est = None
-
-        self.use_model_features = use_model_features
 
         # Lookup based estimator
         if lookup_data_path is not None:

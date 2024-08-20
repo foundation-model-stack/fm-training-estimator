@@ -12,13 +12,13 @@ import uvicorn
 from .core import run
 
 
-def api(data_path, model_path, use_model_features):
+def api(data_path, model_path):
     app = FastAPI()
 
     @app.post("/api/estimate")
     def estimate(config: Any = Body()):
         conf = json.loads(config)
-        output = run(conf, data_path, model_path, use_model_features)
+        output = run(conf, data_path, model_path)
         # this default float business is needed to deal with numpy.float32
         # types present in the output json which don't serialize out of the box
         return json.dumps(output, default=float)
@@ -26,9 +26,9 @@ def api(data_path, model_path, use_model_features):
     return app
 
 
-def run_api(data_path=None, model_path=None, port=3000, use_model_features=True):
+def run_api(data_path=None, model_path=None, port=3000):
 
-    app = api(data_path, model_path, use_model_features)
+    app = api(data_path, model_path)
     uvicorn.run(app, host="0.0.0.0", port=port)
 
 

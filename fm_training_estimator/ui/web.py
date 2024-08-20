@@ -10,7 +10,6 @@ from .core import run
 # control variables
 conf_model_path = None
 conf_data_path = None
-conf_umf = True
 
 # list of white-listed models
 model_list = []
@@ -72,7 +71,7 @@ def estimate(*args):
 
     return [
         config,
-        run(config, conf_data_path, conf_model_path, conf_umf),
+        run(config, conf_data_path, conf_model_path),
         prev_conf,
         prev_out,
     ]
@@ -83,7 +82,6 @@ def web(
     data_path=None,
     model_path=None,
     port=3000,
-    use_model_features=True,
     enable_api=False,
 ):
     """
@@ -91,7 +89,6 @@ def web(
     port: Port to start the webserver on
     data_path: Path to data file for lookup
     model_path: Path to model file with regression model
-    use_model_features: whether to use model name or features as the keys for lookup and regression
     enable_api: whether to enable the api as a part of this ui
     """
 
@@ -100,10 +97,9 @@ def web(
         with open(model_whitelist, "r") as wl:
             model_list = wl.read().splitlines()
 
-    global conf_data_path, conf_model_path, conf_umf
+    global conf_data_path, conf_model_path
     conf_data_path = data_path
     conf_model_path = model_path
-    conf_umf = use_model_features
 
     with gr.Blocks(title="fm-training-estimator") as demo:
         with gr.Row():
@@ -237,7 +233,7 @@ def web(
         to_conf_btn.click(update_conf, inputs=inputs, outputs=conf)
 
     if enable_api:
-        app = api(data_path, model_path, use_model_features)
+        app = api(data_path, model_path)
         gr.mount_gradio_app(app, demo, path="/")
         uvicorn.run(app, host="0.0.0.0", port=port)
     else:
