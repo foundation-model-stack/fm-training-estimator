@@ -77,3 +77,22 @@ make run-web-ui
 This will start the UI on `localhost:3000` port.
 
 (The web ui has other options, not covered in this simple setup. If you want to skip the model whitelisting or change the port, directly run the UI as shown in the README in the `./fm_training_estimator/ui` folder.)
+
+### Container Image
+
+To build the estimator container image:
+
+1. Make sure both `model.json` and `data.csv` files are present in the `workdir` folder.
+
+2. Use this command to build and push the image:
+
+```shell
+make cbuild
+make cpush # If you want to push to the container registry
+```
+
+3. Use this command to run the image:
+
+```shell
+docker run --rm -it -v "/path/to/input.json:/app/input.json" icr.io/ftplatform/fm_training_estimator:latest
+```
