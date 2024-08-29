@@ -10,14 +10,6 @@ Path to file with raw CSV data. Look into the `regressor` folder to learn more a
 
 Path to model built using the `regressor` module.
 
-### Use model features
-
-Whether to use model name - just a string in the HF standard format, such as "ibm-granite/granite-7b-base" or model features.
-
-Model features refers to metadata about the model, such as Architecure (eg, LlamaForCausalLM) and other configuration such as number of hidden layers, embedding dimension and so on. This approach extracts these features for an input model and uses that for the regression parts. This is the default.
-
-Prefer the former if you have a small set of models of interest. The second approach is more generic and can handle new inputs better. 
-
 ## cli
 
 To use the cli:

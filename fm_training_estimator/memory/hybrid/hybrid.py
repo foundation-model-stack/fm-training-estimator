@@ -3,6 +3,7 @@ import logging
 
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
+from ...data import format_query
 from ...regressor import LookupRegressor, XGBoostRegressor
 from ...utils import extract_model_features
 from ..fsdp import FSDPEstimator
@@ -17,7 +18,6 @@ class HybridEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
-        use_model_features=False,
     ):
 
         logging.info("Hybrid Estimator: Initializing")
@@ -25,8 +25,6 @@ class HybridEstimator:
         self.fm = fm_args
         self.ta = train_args
         self.ia = infra_args
-
-        self.use_model_features = use_model_features
 
         self.full_est = FullParameterTuningEstimator(fm_args, train_args)
 
@@ -91,9 +89,7 @@ class HybridEstimator:
             "seq_len": self.fm.block_size,
         }
 
-        if self.use_model_features:
-            model_name = lookup_query.pop("model_name")
-            lookup_query = lookup_query | extract_model_features(model_name)
+        lookup_query = format_query(lookup_query, self.lookup_est.get_data_format())
 
         res = self.lookup_est.run(lookup_query)
 
@@ -112,16 +108,16 @@ class HybridEstimator:
 
         logging.info("Hybrid: Attempting Regression")
 
-        params = [
-            self.fm.base_model_path,
-            self.ia.numGpusPerPod,
-            self.ta.per_device_train_batch_size,
-            self.fm.block_size,
-        ]
+        lookup_query = {
+            "model_name": self.fm.base_model_path,
+            "number_gpus": self.ia.numGpusPerPod,
+            "batch_size": self.ta.per_device_train_batch_size,
+            "seq_len": self.fm.block_size,
+        }
 
-        if self.use_model_features:
-            model_name = params[0]
-            params = extract_model_features(model_name, fmt="list") + params[1:]
+        params = format_query(
+            lookup_query, self.reg_est.get_data_format(), only_values=True
+        )
 
         res = self.reg_est.run(params)
 

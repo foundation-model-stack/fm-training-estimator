@@ -3,6 +3,7 @@ import logging
 
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments
+from ...data import format_query
 from ...regressor import LookupRegressor, XGBoostRegressor
 from ...utils import extract_model_features
 
@@ -15,7 +16,6 @@ class HybridSpeedEstimator:
         infra_args: InfraArguments,
         lookup_data_path,
         model_path,
-        use_model_features=False,
     ):
 
         self.fm = fm_args
@@ -23,8 +23,6 @@ class HybridSpeedEstimator:
         self.ia = infra_args
         self.lookup_est = None
         self.reg_est = None
-
-        self.use_model_features = use_model_features
 
         # Lookup based estimator
         if lookup_data_path is not None:
@@ -48,9 +46,7 @@ class HybridSpeedEstimator:
             "seq_len": seqlen,
         }
 
-        if self.use_model_features:
-            model_name = lookup_query.pop("model_name")
-            lookup_query = lookup_query | extract_model_features(model_name)
+        lookup_query = format_query(lookup_query, self.lookup_est.get_data_format())
 
         res = self.lookup_est.run(lookup_query)
 
@@ -76,16 +72,15 @@ class HybridSpeedEstimator:
             return res
 
         # attempt reg approach
-        params = [
-            self.fm.base_model_path,
-            self.ia.numGpusPerPod,
-            self.ta.per_device_train_batch_size,
-            int(seqlen),
-        ]
-
-        if self.use_model_features:
-            model_name = params[0]
-            params = extract_model_features(model_name, fmt="list") + params[1:]
+        lookup_query = {
+            "model_name": self.fm.base_model_path,
+            "number_gpus": self.ia.numGpusPerPod,
+            "batch_size": self.ta.per_device_train_batch_size,
+            "seq_len": int(seqlen),
+        }
+        params = format_query(
+            lookup_query, self.reg_est.get_data_format(), only_values=True
+        )
 
         res = self.reg_est.run(params)
 

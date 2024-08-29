@@ -17,7 +17,7 @@ def estimate_memory(config, reg_model=None):
         config["numGpusPerPod"] = 0
 
     fm, ta, ia, _ = parse(config)
-    est = HybridEstimator(fm, ta, ia, None, reg_model, use_model_features=True)
+    est = HybridEstimator(fm, ta, ia, None, reg_model)
 
     res["total_mem_estimate_og"] = est.get_total_mem_estimate()
     res["activation_memory_og"] = est.calculate_activation_memory()

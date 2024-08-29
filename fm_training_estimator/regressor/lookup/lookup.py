@@ -1,6 +1,9 @@
 # Third Party
 import pandas
 
+# Local
+from ...data import lookup_format_version
+
 
 class LookupRegressor:
     def __init__(self, data_path=None):
@@ -11,6 +14,10 @@ class LookupRegressor:
 
     def load(self, data_path):
         self.data = pandas.read_csv(data_path)
+
+    def get_data_format(self):
+        keys = ",".join(list(self.data.columns.values))
+        return lookup_format_version(keys)
 
     def run(self, X: dict):
         query = ""
