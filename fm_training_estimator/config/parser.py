@@ -38,8 +38,7 @@ def parse(
         return arg_parser.parse_dict(config)
     except Exception as e:  # pylint: disable=broad-except
         logger.error(
-            "failed to parse the provided arguments from config {config}. error : \
-                {e}".format(
+            "failed to parse the provided arguments from config {config}. error: {e}".format(
                 config=config, e=e
             )
         )

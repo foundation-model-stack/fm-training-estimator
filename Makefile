@@ -1,3 +1,5 @@
+IMAGE ?= icr.io/ftplatform/fm_training_estimator:latest
+
 .PHONY: build
 build: lint fmt install
 	tox -e build
@@ -37,3 +39,11 @@ run-cli:
 .PHONY: run-api
 run-api:
 	python -m fm_training_estimator.ui.api ./workdir/data.csv ./workdir/model.json
+
+.PHONY: cbuild
+cbuild:
+	docker build -t ${IMAGE} -f Dockerfile .
+
+.PHONY: cpush
+cpush:
+	docker push ${IMAGE}
