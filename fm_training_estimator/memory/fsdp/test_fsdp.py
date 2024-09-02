@@ -5,7 +5,7 @@ from .fsdp import FSDPEstimator
 
 
 def test_fsdp():
-    fm, ta, ia, _ = parse(
+    fm, ta, ia, _, _ = parse(
         {"base_model_path": "ibm-granite/granite-8b-code-base", "gpu_memory_in_gb": 80}
     )
 

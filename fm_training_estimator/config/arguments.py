@@ -17,12 +17,17 @@ class PeftPromptTuningConfig(PromptTuningConfig):
 
 
 @dataclass
-class PeftLoraConfig(LoraConfig):
-    """dataclass for lora config
+class PeftLoraConfig:
+    """Dataclass for lora config
 
-    Args:
-        LoraConfig (_type_): directly imported from peft library
+    Not directly imported from peft LoraConfig due to complexity.
     """
+
+    r: int = field(default=4, metadata={"help": ("Lora rank parameter")})
+
+    lora_alpha: int = field(default=8)
+    lora_dropout: float = field(default=0.1)
+    target_modules: str = field(default="[q_proj, v_proj]")
 
 
 @dataclass

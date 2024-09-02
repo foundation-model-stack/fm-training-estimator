@@ -1,11 +1,11 @@
 # Standard
+from pathlib import Path
+from typing import Optional
+import json
 import logging
 
 # Third Party
 import fire
-import json
-from typing import Optional
-from pathlib import Path
 
 # Local
 from .core import run

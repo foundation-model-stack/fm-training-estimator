@@ -6,12 +6,20 @@ from transformers import HfArgumentParser
 
 # Local
 from ..utils import logger, unmarshal
-from .arguments import DataArguments, FMArguments, HFTrainingArguments, InfraArguments
+from .arguments import (
+    DataArguments,
+    FMArguments,
+    HFTrainingArguments,
+    InfraArguments,
+    PeftLoraConfig,
+)
 
 
 def parse(
     config: Union[Dict, str]
-) -> Tuple[FMArguments, HFTrainingArguments, InfraArguments, DataArguments]:
+) -> Tuple[
+    FMArguments, HFTrainingArguments, InfraArguments, DataArguments, PeftLoraConfig
+]:
     """parse config and return respective dataclass objects
 
     Args:
@@ -33,7 +41,13 @@ def parse(
             config = unmarshal(config)
 
         arg_parser = HfArgumentParser(
-            [FMArguments, HFTrainingArguments, InfraArguments, DataArguments]
+            [
+                FMArguments,
+                HFTrainingArguments,
+                InfraArguments,
+                DataArguments,
+                PeftLoraConfig,
+            ]
         )
         return arg_parser.parse_dict(config)
     except Exception as e:  # pylint: disable=broad-except
