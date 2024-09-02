@@ -3,7 +3,7 @@ from ..config import is_fsdp, parse
 from ..memory import HybridEstimator, HybridLoraEstimator, HybridQLoraEstimator
 from ..throughput import HybridSpeedEstimator
 from ..time import get_total_time
-from ..tokens import TokenEstimator0
+from ..tokens import TokenEstimator0, TokenEstimator2
 from ..utils import fmt_size
 
 
@@ -50,6 +50,8 @@ def run(config, lookup_data_path=None, model_path=None):
     token_est = None
     if da.te_approach == 0:
         token_est = TokenEstimator0(da)
+    elif da.te_approach == 2:
+        token_est = TokenEstimator2(da)
 
     speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
     res["tps"] = float(speed_est.get_tps())
