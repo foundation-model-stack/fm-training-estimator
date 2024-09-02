@@ -56,6 +56,8 @@ def to_config(
             config["te_approach"] = -1
         case "0":
             config["te_approach"] = 0
+        case "2":
+            config["te_approach"] = 2
 
     return config
 
@@ -191,7 +193,7 @@ def web(
                     with gr.Column():
 
                         token_est_approach = gr.Dropdown(
-                            ["disabled", "0"],
+                            ["disabled", "0", "2"],
                             value="disabled",
                             label="Token Estimation Approach",
                         )
