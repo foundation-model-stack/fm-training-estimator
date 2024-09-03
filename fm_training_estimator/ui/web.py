@@ -166,7 +166,7 @@ def web(
                 )
 
                 technique = gr.Dropdown(
-                    ["full", "fsdp"],
+                    ["full", "fsdp", "lora"],
                     value="full",
                     label="Technique",
                     info="Other techniques will be added later!",

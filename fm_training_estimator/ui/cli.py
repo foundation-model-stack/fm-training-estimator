@@ -26,20 +26,7 @@ def run_cli(
         lookup_data_path=lookup_data_path,
         model_path=model_path,
     )
-    output_dict = {
-        "total_mem_estimate_og": float(output["total_mem_estimate_og"]),
-        "activation_memory_og": float(output["activation_memory_og"]),
-        "gradient_memory_og": float(output["gradient_memory_og"]),
-        "model_memory_og": float(output["model_memory_og"]),
-        "optimizer_memory_og": float(output["optimizer_memory_og"]),
-        "total_mem_estimate": output["total_mem_estimate"],
-        "activation_memory": output["activation_memory"],
-        "gradient_memory": output["gradient_memory"],
-        "model_memory": output["model_memory"],
-        "optimizer_memory": output["optimizer_memory"],
-        "tps": float(output["tps"]),
-    }
-    output_json = json.dumps(output_dict, indent=4)
+    output_json = json.dumps(output, indent=4)
     if output_path == "":
         # use print instead of logging so that
         # the output can be parsed as valid json

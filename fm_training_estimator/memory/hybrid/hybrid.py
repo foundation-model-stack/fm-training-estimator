@@ -5,7 +5,6 @@ import logging
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
 from ...data import format_query
 from ...regressor import LookupRegressor, XGBoostRegressor
-from ...utils import extract_model_features
 from ..fsdp import FSDPEstimator
 from ..full import FullParameterTuningEstimator
 
