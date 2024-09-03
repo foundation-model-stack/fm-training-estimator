@@ -17,7 +17,6 @@ def run_cli(
     log_level: str = "INFO",
     lookup_data_path: Optional[str] = None,
     model_path: Optional[str] = None,
-    use_model_features: bool = True,
 ):
     """Run the CLI."""
     log_level = log_level.upper()
@@ -26,7 +25,6 @@ def run_cli(
         config=config,
         lookup_data_path=lookup_data_path,
         model_path=model_path,
-        use_model_features=use_model_features,
     )
     output_dict = {
         "total_mem_estimate_og": float(output["total_mem_estimate_og"]),

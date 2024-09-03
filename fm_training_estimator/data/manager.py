@@ -42,6 +42,11 @@ formats = [
         "model_arch,model_hidden_size,model_intermediate_size,model_num_attn_heads,model_num_hidden_layers,model_num_key_value_heads,number_gpus,batch_size,seq_len",
         "tokens_per_second,memory,memory_act",
     ),
+    Format(
+        "v3",
+        "model_arch,model_hidden_size,model_intermediate_size,model_num_attn_heads,model_num_hidden_layers,model_num_key_value_heads,method,gpu_model,number_gpus,batch_size,seq_len",
+        "tokens_per_second,memory,memory_act",
+    ),
 ]
 
 
@@ -90,13 +95,14 @@ def format_query(partials, version, only_values=False):
 
     # Handle changes for other model versions here
 
-    if version == "v2":
+    if version == "v2" or version == "v3":
         model_features = extract_model_features(partials["model_name"])
         for k, v in model_features.items():
             if k in query:
                 query[k] = v
 
     # TODO: validate that all fields are filled in here, no None's present
+    # print(query)
 
     if not only_values:
         return query

@@ -87,6 +87,8 @@ class HybridEstimator:
             "number_gpus": self.ia.numGpusPerPod,
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": self.fm.block_size,
+            "gpu_model": self.ia.gpuModel,
+            "method": self.fm.technique,
         }
 
         lookup_query = format_query(lookup_query, self.lookup_est.get_data_format())
@@ -113,6 +115,8 @@ class HybridEstimator:
             "number_gpus": self.ia.numGpusPerPod,
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": self.fm.block_size,
+            "gpu_model": self.ia.gpuModel,
+            "method": self.fm.technique,
         }
 
         params = format_query(

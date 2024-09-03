@@ -22,6 +22,7 @@ def to_config(
     model_precision,
     grad_checkpoint,
     num_gpus,
+    gpu_model,
     gpu_mem,
     technique,
     token_est_approach,
@@ -37,7 +38,9 @@ def to_config(
         "torch_dtype": model_precision,
         "gradient_checkpointing": grad_checkpoint,
         "numGpusPerPod": num_gpus,
+        "gpuModel": gpu_model,
         "gpu_memory_in_gb": gpu_mem,
+        "technique": technique,
         "dataset": dataset,
         "dataset_text_field": dataset_field,
         "dataset_split": dataset_split,
@@ -155,6 +158,9 @@ def web(
                     step=1,
                 )
 
+                gpu_model = gr.Dropdown(
+                    label="GPU Model", choices=["A100", "H100", "L40S"], value="A100"
+                )
                 gpu_mem = gr.Dropdown(
                     label="GPU Memory (per GPU)", choices=[36, 40, 80], value=80
                 )
@@ -206,6 +212,7 @@ def web(
                     model_precision,
                     grad_checkpoint,
                     num_gpus,
+                    gpu_model,
                     gpu_mem,
                     technique,
                     token_est_approach,

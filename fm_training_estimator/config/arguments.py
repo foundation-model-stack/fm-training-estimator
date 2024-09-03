@@ -59,6 +59,11 @@ class InfraArguments:
 
     gpu_memory_in_gb: int = field(default=80, metadata={"help": ("GPU RAM in GBs")})
 
+    gpuModel: str = field(
+        default="A100",
+        metadata={"help": ("model of gpu used")},
+    )
+
 
 @dataclass
 class FMArguments:
@@ -109,6 +114,10 @@ class FMArguments:
                 Choose one from float16, float32, bfloat16"
             )
         },
+    )
+
+    technique: str = field(
+        default="full", metadata={"help": ("Fine-tuning technique being used")}
     )
 
 

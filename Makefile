@@ -34,7 +34,7 @@ run-web-ui:
 
 .PHONY: run-cli
 run-cli:
-	python -m fm_training_estimator.ui.cli -l ./workdir/data.csv -m ./workdir/model.json $(CONF)
+	python -m fm_training_estimator.ui.cli --lookup_data_path ./workdir/data.csv -m ./workdir/model.json $(CONF)
 
 .PHONY: run-api
 run-api:
