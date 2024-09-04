@@ -24,7 +24,10 @@ class TokenEstimator0(TokenEstimator):
             dataset = load_dataset("json", data_files={"train": da.dataset})["train"]
         else:
             dataset = load_dataset(
-                da.dataset, name=da.dataset_config_name, split=da.dataset_split
+                da.dataset,
+                name=da.dataset_config_name,
+                split=da.dataset_split,
+                trust_remote_code=da.trust_remote_code
             )
 
         tokens = []
