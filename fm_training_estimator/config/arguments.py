@@ -130,3 +130,8 @@ class DataArguments:
         default=None,
         metadata={"help": ("dataset configuration to use, in case of HF dataset")},
     )
+
+    trust_remote_code: bool = field(
+        default=True,
+        metadata={"help": ("allow dataset with a loading script")}
+    )
