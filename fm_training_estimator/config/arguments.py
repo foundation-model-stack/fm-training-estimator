@@ -163,6 +163,10 @@ class DataArguments:
         metadata={"help": ("dataset configuration to use, in case of HF dataset")},
     )
 
+    trust_remote_code: bool = field(
+        default=True,
+        metadata={"help": ("allow dataset with a loading script")}
+    )
 
 class EstimatorMethod(Enum):
     """Enumerate different estimation models the FM Training Estimator is to use to make an estimation."""
