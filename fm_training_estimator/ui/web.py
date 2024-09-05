@@ -129,8 +129,8 @@ def web(
                 )
 
                 batch_size = gr.Slider(
-                    label="Batch size",
-                    info="number of samples per batch",
+                    label="Batch size (per device)",
+                    info="number of samples per batch per device",
                     minimum=1,
                     maximum=512,
                     value=1,
@@ -162,8 +162,16 @@ def web(
                     label="GPU Model", choices=["A100", "H100", "L40S"], value="A100"
                 )
                 gpu_mem = gr.Dropdown(
-                    label="GPU Memory (per GPU)", choices=[36, 40, 80], value=80
+                    label="GPU Memory (per GPU)", choices=[48, 40, 80], value=80
                 )
+
+                def update_gpu_memory(gpu_model):
+                    if gpu_model == "L40S":
+                        return 48
+                    else:
+                        return 80
+
+                gpu_model.change(update_gpu_memory, gpu_model, gpu_mem)
 
                 technique = gr.Dropdown(
                     ["full", "fsdp", "lora"],

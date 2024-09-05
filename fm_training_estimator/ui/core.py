@@ -42,10 +42,10 @@ def run(config, lookup_data_path=None, model_path=None):
     res["tps"] = float(speed_est.get_tps())
 
     if token_est is not None:
-        res["tokens_per_sample"] = token_est.get_estimated_batch_width(
-            ta.per_device_train_batch_size
+        res["tokens_per_sample"] = int(
+            token_est.get_estimated_batch_width(ta.per_device_train_batch_size)
         )
-        res["total_tokens"] = token_est.get_total_tokens()
+        res["total_tokens"] = int(token_est.get_total_tokens())
 
         # get the update tps for this estimate token width
         res["tps"] = float(speed_est.get_tps(res["tokens_per_sample"]))
