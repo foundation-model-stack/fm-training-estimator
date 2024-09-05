@@ -83,7 +83,7 @@ class HybridEstimator:
     def lookup_mem(self):
         lookup_query = {
             "model_name": self.fm.base_model_path,
-            "number_gpus": self.ia.numGpusPerPod,
+            "number_gpus": self.fsdp_est.num_gpus,
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": self.fm.block_size,
             "gpu_model": self.ia.gpuModel,
@@ -111,7 +111,7 @@ class HybridEstimator:
 
         lookup_query = {
             "model_name": self.fm.base_model_path,
-            "number_gpus": self.ia.numGpusPerPod,
+            "number_gpus": self.fsdp_est.num_gpus,
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": self.fm.block_size,
             "gpu_model": self.ia.gpuModel,

@@ -33,6 +33,7 @@ def run(config, lookup_data_path=None, model_path=None):
             res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
         if fm.technique == "lora":
             res["num_gpus"] = est.num_gpus
+        ia.numGpusPerPod = res["num_gpus"]
 
     token_est = None
     if da.te_approach == 0:
