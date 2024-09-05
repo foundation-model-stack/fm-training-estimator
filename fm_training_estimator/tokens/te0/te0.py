@@ -30,7 +30,8 @@ class TokenEstimator0(TokenEstimator):
         tokens = []
         print("Loading data in dataset...")
         for item in tqdm(dataset):
-            tokens.append(int(len(item[da.dataset_text_field]) / 3.6))
+            txt = da.dataset_text_field.format_map(item)
+            tokens.append(int(len(txt) / 3.6))
 
         self.tokens = tokens
 
