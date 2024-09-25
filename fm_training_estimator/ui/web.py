@@ -230,15 +230,15 @@ def web(
                     dataset_config,
                 ]
             with gr.Column():
-                with gr.Accordion("Configuration"):
-                    conf = gr.JSON(label="Conf")
                 with gr.Accordion("Estimation"):
                     outputs = gr.JSON(label="Predicted Resources")
+                with gr.Accordion("Configuration", open=False):
+                    conf = gr.JSON(label="Conf")
 
-                with gr.Accordion("Previous Configuration"):
-                    prev_conf = gr.JSON(label="Prev Conf")
                 with gr.Accordion("Previous Estimation"):
                     prev_outputs = gr.JSON(label="Prev Predicted Resources")
+                with gr.Accordion("Previous Configuration", open=False):
+                    prev_conf = gr.JSON(label="Prev Conf")
 
         submit_btn.click(
             estimate,
