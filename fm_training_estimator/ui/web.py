@@ -47,7 +47,8 @@ def to_config(
         "dataset_config_name": dataset_config,
     }
 
-    if technique == "fsdp":
+    # can be 0, for auto, or > 1 for manual
+    if num_gpus != 1:
         config["fsdp"] = "full_shard"
 
     match token_est_approach:
@@ -180,17 +181,11 @@ def web(
                 gpu_model.change(update_gpu_memory, gpu_model, gpu_mem)
 
                 technique = gr.Dropdown(
-                    ["full", "fsdp", "lora"],
+                    ["full", "lora"],
                     value="full",
                     label="Technique",
-                    info="Other techniques will be added later!",
+                    info="All approaches use FSDP to scale. Other techniques will be added later!",
                 )
-
-                def update_num_gpus(technique):
-                    if technique == "full":
-                        return 1
-
-                technique.change(update_num_gpus, technique, num_gpus)
 
                 with gr.Row():
                     with gr.Column():

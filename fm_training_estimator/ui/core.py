@@ -29,7 +29,7 @@ def run(config, lookup_data_path=None, model_path=None):
     res["optimizer_memory"] = fmt_size(res["optimizer_memory_og"])
 
     if ia.numGpusPerPod == 0:
-        if fm.technique == "fsdp" and is_fsdp(ta):
+        if fm.technique == "full" and is_fsdp(ta):
             res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
         elif fm.technique == "lora":
             res["num_gpus"] = est.num_gpus
