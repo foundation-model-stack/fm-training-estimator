@@ -72,9 +72,15 @@ def estimate(*args):
     config = to_config(*args)
     # conf_store.value = config
 
+    output = run(config, conf_data_path, conf_model_path)
+    # remove out the "_og" fields
+    rem_keys = list(filter(lambda x: x.endswith("_og"), output.keys()))
+    for k in rem_keys:
+        del output[k]
+
     return [
         config,
-        run(config, conf_data_path, conf_model_path),
+        output,
         prev_conf,
         prev_out,
     ]
