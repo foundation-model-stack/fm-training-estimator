@@ -78,7 +78,7 @@ class HybridEstimator:
             trials -= 1
 
         logging.warning("No suitable num gpus found!")
-        self.fsdp_est.set_number_of_gpus(0)
+        self.fsdp_est.set_number_of_gpus(-1)
 
     def lookup_mem(self):
         lookup_query = {

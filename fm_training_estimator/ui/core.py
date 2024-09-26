@@ -38,6 +38,10 @@ def run(config, lookup_data_path=None, model_path=None):
 
         ia.numGpusPerPod = res["num_gpus"]
 
+    # No suitable configuration found
+    if res["num_gpus"] == -1:
+        return {"error": "Input configuration is infeasible!"}
+
     token_est = None
     if da.te_approach == 0:
         token_est = TokenEstimator0(da)
