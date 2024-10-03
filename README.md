@@ -36,6 +36,12 @@ Fully theory. Simulation based models available.
 
 ## Usage
 
+First, clone the repository in your local machine. Within the repository, create a virtual environment to ensure no conflicts in dependencies.
+
+```
+python -m venv .venv
+```
+
 ### Install
 ```
 make install
@@ -54,9 +60,10 @@ Now, build a regression model using this data, using the provided make target:
 ```
 make build-model
 ```
-This will create a model called `./workdir/model.json`.
+This will create a model called `./workdir/model.json` which will be used to estimate the resource consumption.
 
 You can now run the estimator, using one of the various UIs.
+
 
 ### Interacting
 
@@ -64,7 +71,7 @@ For a full list of UIs, look into the `./fm_training_estimator/ui` folder.
 
 Easiest option is to run the Web UI.
 
-To do this, first prepare a txt file called `model_whitelist.txt` in the `workdir/` with a list of model names, 1 per line. You can use the provided example listing using:
+To do this, first prepare a txt file called `model_whitelist.txt` in the `workdir/` with a list of model names, 1 per line. Note that these are the models on which you want to run the estimator to estimate their resource consumption. You can use the provided example listing using:
 ```
 cp ./fm_training_estimator/ui/model_whitelist.txt ./workdir/
 ```
