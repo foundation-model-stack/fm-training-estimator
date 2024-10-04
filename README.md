@@ -40,6 +40,7 @@ First, clone the repository in your local machine. Within the repository, create
 
 ```
 python -m venv .venv
+source .venv/bin/activate
 ```
 
 ### Install

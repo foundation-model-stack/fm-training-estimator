@@ -28,7 +28,7 @@ def run(config, lookup_data_path=None, model_path=None):
     res["model_memory"] = fmt_size(res["model_memory_og"])
     res["optimizer_memory"] = fmt_size(res["optimizer_memory_og"])
 
-    ia.numGpusPerPod = ia.numGpusPerPod
+    res["num_gpus"] = ia.numGpusPerPod
 
     if ia.numGpusPerPod == 0:
         if fm.technique == "full" and is_fsdp(ta):
