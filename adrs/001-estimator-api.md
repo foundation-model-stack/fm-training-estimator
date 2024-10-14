@@ -58,7 +58,7 @@ Key things to include in this section:
 Example of an `EstimateInput` with all fields defined:
 ```json
 {
-  "estimator": { // EstimatorConfig
+  "estimator": { // EstimatorMetadata
     "base_data_path": "data.csv",
     "method": "theory", // theory, learned, hybrid
     "token_estimation_version": 0

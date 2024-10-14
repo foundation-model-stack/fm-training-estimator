@@ -1,5 +1,7 @@
 # Standard
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import List, Optional
 
 # Third Party
 from peft.tuners.lora import LoraConfig
@@ -65,6 +67,11 @@ class InfraArguments:
     )
 
 
+class TuningTechnique(Enum):
+    LORA = "lora"
+    FULL = "full"
+
+
 @dataclass
 class FMArguments:
     """dataclass to store additional args not covered by standard HF argument dataclasses"""
@@ -116,8 +123,9 @@ class FMArguments:
         },
     )
 
-    technique: str = field(
-        default="full", metadata={"help": ("Fine-tuning technique being used")}
+    technique: TuningTechnique = field(
+        default=TuningTechnique.FULL,
+        metadata={"help": ("Fine-tuning technique being used")},
     )
 
 
@@ -144,3 +152,46 @@ class DataArguments:
         default=None,
         metadata={"help": ("dataset configuration to use, in case of HF dataset")},
     )
+
+
+class EstimatorMethod(Enum):
+    THEORY = "theory"
+    LEARNED = "learned"
+    HYBRID = "hybrid"
+
+
+@dataclass
+class EstimatorMetadata:
+    base_data_path: str
+    method: List[EstimatorMethod]
+    token_estimation_version: str
+
+
+@dataclass
+class JobConfig:
+    hf_training: HFTrainingArguments = field(default_factory=HFTrainingArguments)
+    fm: FMArguments = field(default_factory=FMArguments)
+    data: DataArguments = field(default_factory=DataArguments)
+    infra: InfraArguments = field(default_factory=InfraArguments)
+    peft_lora: PeftLoraConfig = field(default_factory=PeftLoraConfig)
+
+
+@dataclass
+class EstimateRequest:
+    job_configs: List[JobConfig]
+    estimator_metadata: Optional[EstimatorMetadata] = None
+
+
+@dataclass
+class TimeEstimateResponse:
+    time: str
+
+
+@dataclass
+class MemoryEstimateResponse:
+    total_mem_estimate: str
+    activation_memory: str
+    gradient_memory: str
+    model_memory: str
+    optimizer_memory: str
+    num_gpus: int

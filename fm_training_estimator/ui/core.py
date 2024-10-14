@@ -1,3 +1,11 @@
+# First Party
+from fm_training_estimator.config.arguments import (
+    JobConfig,
+    MemoryEstimateResponse,
+    TimeEstimateResponse,
+    TuningTechnique,
+)
+
 # Local
 from ..config import is_fsdp, parse
 from ..memory import HybridEstimator, HybridLoraEstimator
@@ -6,12 +14,49 @@ from ..tokens import TokenEstimator0
 from ..utils import fmt_size
 
 
+def estimate_time(config: JobConfig, lookup_data_path=None, model_path=None):
+
+    return TimeEstimateResponse(time="to be implemented")
+
+
+def estimate_memory(config: JobConfig, lookup_data_path=None, model_path=None):
+    if config.fm.technique == TuningTechnique.LORA:
+        est = HybridLoraEstimator(
+            config.fm,
+            config.hf_training,
+            config.infra,
+            config.peft_lora,
+            lookup_data_path,
+            model_path,
+        )
+    else:
+        est = HybridEstimator(
+            config.fm, config.hf_training, config.infra, lookup_data_path, model_path
+        )
+
+    total_mem_estimate = fmt_size(float(est.get_total_mem_estimate()))
+    activation_memory = fmt_size(float(est.calculate_activation_memory()))
+    gradient_memory = fmt_size(float(est.calculate_gradient_memory()))
+    model_memory = fmt_size(float(est.calculate_model_memory()))
+    optimizer_memory = fmt_size(float(est.calculate_optimizer_memory()))
+    num_gpus = config.infra.numGpusPerPod
+
+    return MemoryEstimateResponse(
+        total_mem_estimate,
+        activation_memory,
+        gradient_memory,
+        model_memory,
+        optimizer_memory,
+        num_gpus,
+    )
+
+
 def run(config, lookup_data_path=None, model_path=None):
 
     res = {}
     fm, ta, ia, da, la = parse(config)
 
-    if fm.technique == "lora":
+    if config.fm.technique == "lora":
         est = HybridLoraEstimator(fm, ta, ia, la, lookup_data_path, model_path)
     else:
         est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)

@@ -8,8 +8,15 @@ from fastapi import Body, FastAPI
 import fire
 import uvicorn
 
+# First Party
+from fm_training_estimator.config.arguments import (
+    EstimateRequest,
+    MemoryEstimateResponse,
+    TimeEstimateResponse,
+)
+
 # Local
-from .core import run
+from .core import estimate_memory, estimate_time, run
 
 
 def api(data_path, model_path):
@@ -22,6 +29,16 @@ def api(data_path, model_path):
         # this default float business is needed to deal with numpy.float32
         # types present in the output json which don't serialize out of the box
         return json.dumps(output, default=float)
+
+    @app.post("/api/time", response_model=TimeEstimateResponse)
+    def time(request: EstimateRequest):
+        conf = request.job_configs[0]
+        return estimate_time(conf, data_path, model_path)
+
+    @app.post("/api/memory", response_model=MemoryEstimateResponse)
+    def memory(request: EstimateRequest):
+        conf = request.job_configs[0]
+        return estimate_memory(conf, data_path, model_path)
 
     return app
 
