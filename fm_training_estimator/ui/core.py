@@ -1,3 +1,6 @@
+# Third Party
+from fastapi import HTTPException
+
 # First Party
 from fm_training_estimator.config.arguments import (
     JobConfig,
@@ -15,8 +18,36 @@ from ..utils import fmt_size
 
 
 def estimate_time(config: JobConfig, lookup_data_path=None, model_path=None):
+    token_est = None
+    if config.data.te_approach == 0:
+        token_est = TokenEstimator0(config.data)
 
-    return TimeEstimateResponse(time="to be implemented")
+    speed_est = HybridSpeedEstimator(
+        config.fm, config.hf_training, config.infra, lookup_data_path, model_path
+    )
+    # res["tps"] = float(speed_est.get_tps())
+
+    time = ""
+    if token_est is not None:
+        tokens_per_sample = int(
+            token_est.get_estimated_batch_width(
+                config.hf_training.per_device_train_batch_size
+            )
+        )
+        total_tokens = int(token_est.get_total_tokens())
+
+        # get the update tps for this estimate token width
+        tps = float(speed_est.get_tps(tokens_per_sample))
+
+        time = total_tokens / tps
+
+    if not time:
+        raise HTTPException(
+            status_code=501,
+            detail="This te_approach is not implemented or has been disabled",
+        )
+
+    return TimeEstimateResponse(time)
 
 
 def estimate_memory(config: JobConfig, lookup_data_path=None, model_path=None):
@@ -40,6 +71,22 @@ def estimate_memory(config: JobConfig, lookup_data_path=None, model_path=None):
     model_memory = fmt_size(float(est.calculate_model_memory()))
     optimizer_memory = fmt_size(float(est.calculate_optimizer_memory()))
     num_gpus = config.infra.numGpusPerPod
+
+    if num_gpus == 0:
+        if config.fm.technique == TuningTechnique.FULL and is_fsdp(config.hf_training):
+            num_gpus = est.fsdp_est.get_number_of_gpus()
+        elif config.fm.technique == TuningTechnique.LORA:
+            num_gpus = est.num_gpus
+        else:
+            num_gpus = 1
+
+        config.infra.numGpusPerPod = num_gpus
+
+    # No suitable configuration found
+    if num_gpus == -1:
+        raise HTTPException(
+            status_code=422, detail="Input configuration is infeasible!"
+        )
 
     return MemoryEstimateResponse(
         total_mem_estimate,
