@@ -54,7 +54,7 @@ Example of an `EstimateInput` with all fields defined:
     "method": "theory", // theory, learned, hybrid
     "token_estimation_version": 0
   },
-  "configs": [{ // list of [Config]
+  "job_configs": [{ // list of [JobConfig]
     "hf_training": { // HFArguments
       "output_dir": "./output"
     },
@@ -130,7 +130,7 @@ Function `estimate_cost` returns a `CostEstimate`:
 ```python
 {
   "cost": { # CostEstimate
-    "usd": "1"
+    "usd": "0.0"
   }
 }
 ```
@@ -139,7 +139,7 @@ Function `estimate` returns a `Estimate` that include all 4 types of estimates a
 ```python
 {
   "estimate": { # Estimate
-    "memory_estimate": { # MemoryEstimate
+    "memory": { # MemoryEstimate
       "total_mem_estimate": "44.6 GiB",
       "activation_memory": "34.7 GiB",
       "gradient_memory": "2.5 GiB",
@@ -154,7 +154,7 @@ Function `estimate` returns a `Estimate` that include all 4 types of estimates a
       "tps": "5259.07373046875"
     },
     "cost": { # CostEstimate
-      "usd": "1"
+      "usd": "0.0"
     }
   }
 }
