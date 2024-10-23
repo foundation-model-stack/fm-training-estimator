@@ -1,5 +1,7 @@
 # Standard
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import List, Optional
 
 # Third Party
 from peft.tuners.lora import LoraConfig
@@ -9,7 +11,7 @@ from transformers import TrainingArguments
 
 @dataclass
 class PeftPromptTuningConfig(PromptTuningConfig):
-    """dataclass for promptuning config
+    """dataclass for prompt tuning config
 
     Args:
         PromptTuningConfig (_type_): imported directly from peft library
@@ -18,7 +20,7 @@ class PeftPromptTuningConfig(PromptTuningConfig):
 
 @dataclass
 class PeftLoraConfig:
-    """Dataclass for lora config
+    """Dataclass for LoRA tuning config
 
     Not directly imported from peft LoraConfig due to complexity.
     """
@@ -63,6 +65,16 @@ class InfraArguments:
         default="A100",
         metadata={"help": ("model of gpu used")},
     )
+
+
+class TuningTechnique(Enum):
+    """Enumerate different tuning techniques the FM Training Estimator can perform estimation on."""
+
+    LORA = "lora"
+    """LoRA tuning technique."""
+
+    FULL = "full"
+    """Full fine-tuning technique."""
 
 
 @dataclass
@@ -116,13 +128,16 @@ class FMArguments:
         },
     )
 
-    technique: str = field(
-        default="full", metadata={"help": ("Fine-tuning technique being used")}
+    technique: TuningTechnique = field(
+        default=TuningTechnique.FULL,
+        metadata={"help": ("Fine-tuning technique being used")},
     )
 
 
 @dataclass
 class DataArguments:
+    """dataclass to define args handling training data as input for estimation."""
+
     te_approach: int = field(
         default=0, metadata={"help": ("Approach to use for Token Estimation")}
     )
@@ -144,3 +159,90 @@ class DataArguments:
         default=None,
         metadata={"help": ("dataset configuration to use, in case of HF dataset")},
     )
+
+
+class EstimatorMethod(Enum):
+    """Enumerate different estimation models the FM Training Estimator is to use to make an estimation."""
+
+    THEORY = "theory"
+    """Theory model for estimation."""
+
+    LEARNED = "learned"
+    """Learned model for estimation, based on user provided training data."""
+
+    HYBRID = "hybrid"
+    """Hybrid model for estimation, a combination of theory and learned models."""
+
+
+@dataclass
+class EstimatorMetadata:
+    """Metadata for the FM Training Estimator."""
+
+    base_data_path: str
+    method: List[EstimatorMethod]
+    token_estimation_version: str
+
+
+@dataclass
+class JobConfig:
+    """Dataclass that represents a set of different configs for a tuning job to make estimate on."""
+
+    hf_training: HFTrainingArguments = field(default_factory=HFTrainingArguments)
+    fm: FMArguments = field(default_factory=FMArguments)
+    data: DataArguments = field(default_factory=DataArguments)
+    infra: InfraArguments = field(default_factory=InfraArguments)
+    peft_lora: PeftLoraConfig = field(default_factory=PeftLoraConfig)
+
+
+@dataclass
+class EstimateInput:
+    """
+    The dataclass that is an input to a estimate function.
+    It includes a list of different training job configs and metadata about the estimator.
+    """
+
+    job_configs: List[JobConfig]
+    estimator_metadata: Optional[EstimatorMetadata] = None
+
+
+@dataclass
+class TimeEstimate:
+    """The estimated time response to estimate_time function."""
+
+    time: str
+
+
+@dataclass
+class MemoryEstimate:
+    """The estimated memory response to estimate_memory function."""
+
+    total_mem_estimate: str
+    activation_memory: str
+    gradient_memory: str
+    model_memory: str
+    optimizer_memory: str
+    num_gpus: int
+
+
+@dataclass
+class TokenEstimate:
+    """The estimated token response to estimate_token function."""
+
+    tps: float
+
+
+@dataclass
+class CostEstimate:
+    """The estimated cost response to estimate_cost function."""
+
+    usd: float
+
+
+@dataclass
+class Estimate:
+    """The estimate response to estimate function, including time, memory, tokens and cost."""
+
+    memory: MemoryEstimate
+    time: TimeEstimate
+    tokens: TokenEstimate
+    cost: CostEstimate
