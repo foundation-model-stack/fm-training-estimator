@@ -53,7 +53,7 @@ def run(config, lookup_data_path=None, model_path=None):
 
     speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
     res["tps"] = float(speed_est.get_tps())
-    return res
+
     if token_est is not None:
         res["tokens_per_sample"] = int(
             token_est.get_estimated_batch_width(ta.per_device_train_batch_size)
