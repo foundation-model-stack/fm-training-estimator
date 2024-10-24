@@ -51,7 +51,7 @@ class InfraArguments:
 
     numGpusPerPod: int = field(
         default=0,
-        metadata={"help": ("number of gpus requested per pod")},
+        metadata={"help": ("number of gpus requested per pod. Setting to 0 for auto-discover.")},
     )
 
     numPods: int = field(
