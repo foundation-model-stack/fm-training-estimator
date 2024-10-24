@@ -6,6 +6,14 @@ from .xgboost import XGBoostRegressor
 
 
 def train(data_path: str, model_path: str, y_headers: list[str]):
+    """Train a XGBoostRegressor model that can be used by this estimator library.
+
+    Args:
+        data_path (str): the path to training data
+        model_path (str): the output path of trained model. Must end with .json.
+        y_headers (list[str]): list of column names to drop from data
+
+    """
     model = XGBoostRegressor()
 
     if not model_path.endswith(".json"):
