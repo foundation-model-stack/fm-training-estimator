@@ -1,3 +1,6 @@
+# Standard
+import logging
+
 # Third Party
 from datasets import load_dataset
 from tqdm import tqdm
@@ -28,7 +31,7 @@ class TokenEstimator0(TokenEstimator):
             )
 
         tokens = []
-        print("Loading data in dataset...")
+        logging.info("Loading data in dataset...")
         for item in tqdm(dataset):
             txt = da.dataset_text_field.format_map(item)
             tokens.append(int(len(txt) / 3.6))

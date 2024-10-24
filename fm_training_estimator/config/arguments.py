@@ -50,7 +50,7 @@ class InfraArguments:
     """dataclass for infrastructure arguments"""
 
     numGpusPerPod: int = field(
-        default=-1,
+        default=0,
         metadata={"help": ("number of gpus requested per pod")},
     )
 
@@ -178,9 +178,16 @@ class EstimatorMethod(Enum):
 class EstimatorMetadata:
     """Metadata for the FM Training Estimator."""
 
-    base_data_path: str
-    method: List[EstimatorMethod]
-    token_estimation_version: str
+    base_data_path: str = field(
+        default=None, metadata={"help": ("path to the data path for training data")}
+    )
+    method: EstimatorMethod = field(
+        default=EstimatorMethod.HYBRID,
+        metadata={"help": ("enum method the estimator should use")},
+    )
+    token_estimation_version: str = field(
+        default=0, metadata={"help": ("version of token estimator to use")}
+    )
 
 
 @dataclass
@@ -225,7 +232,7 @@ class MemoryEstimate:
 
 
 @dataclass
-class TokenEstimate:
+class TokensEstimate:
     """The estimated token response to estimate_token function."""
 
     tps: float
@@ -244,5 +251,5 @@ class Estimate:
 
     memory: MemoryEstimate
     time: TimeEstimate
-    tokens: TokenEstimate
+    tokens: TokensEstimate
     cost: CostEstimate
