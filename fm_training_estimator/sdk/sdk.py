@@ -1,42 +1,51 @@
 # First Party
-from fm_training_estimator.config.arguments import EstimateInput, MemoryEstimate
+from fm_training_estimator.config.arguments import (
+    CostEstimate,
+    EstimateInput,
+    JobConfig,
+    MemoryEstimate,
+    TimeEstimate,
+    TokensEstimate,
+    TuningTechnique,
+)
 from fm_training_estimator.memory.hybrid.hybrid import HybridEstimator
 from fm_training_estimator.memory.lora.hybrid import HybridLoraEstimator
+from fm_training_estimator.throughput.hybrid.hybrid import HybridSpeedEstimator
+from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
 
 # Local
-from ..config import is_fsdp, parse
+from ..config import is_fsdp
 from ..utils import fmt_size
+
+
+def _get_hybrid_estimator(conf: JobConfig, model_path: str = None):
+    if conf.fm.technique == TuningTechnique.LORA:
+        return HybridLoraEstimator(
+            conf.fm,
+            conf.hf_training,
+            conf.infra,
+            conf.peft_lora,
+            None,
+            model_path,
+        )
+    else:
+        return HybridEstimator(conf.fm, conf.hf_training, conf.infra, None, model_path)
 
 
 def estimate_memory(
     estimate_input: EstimateInput, model_path: str = None
 ) -> MemoryEstimate:
     """
-    Use hybdrid model by default.
-    If no reg model is passed in (check in estimate_input.estimator_metadata), falls back to theory approach.
+    Estimate memory needed for training. Use hybdrid model by default.
     """
+
     if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
         raise ValueError("Did not receive a training job config")
 
     # Only going to process first job_config for now
     job_config = estimate_input.job_configs[0]
 
-    # disable any token estimation
-    job_config.data.te_approach = -1
-
-    if job_config.fm.technique == "lora":
-        est = HybridLoraEstimator(
-            job_config.fm,
-            job_config.hf_training,
-            job_config.infra,
-            job_config.peft_lora,
-            None,
-            model_path,
-        )
-    else:
-        est = HybridEstimator(
-            job_config.fm, job_config.hf_training, job_config.infra, None, model_path
-        )
+    est = _get_hybrid_estimator(job_config, model_path)
 
     total_mem_estimate = fmt_size(est.get_total_mem_estimate())
     activation_memory = fmt_size(est.calculate_activation_memory())
@@ -44,11 +53,23 @@ def estimate_memory(
     model_memory = fmt_size(est.calculate_model_memory())
     optimizer_memory = fmt_size(est.calculate_optimizer_memory())
 
-    if is_fsdp(job_config.hf_training):
-        num_gpus = est.fsdp_est.get_number_of_gpus()
-    else:
-        num_gpus = 0
-        # logger.info("Not enough info to estimate num_gpus, setting to 0.")
+    num_gpus = job_config.infra.numGpusPerPod
+
+    if num_gpus == 0:
+        if job_config.fm.technique == TuningTechnique.FULL and is_fsdp(
+            job_config.hf_training
+        ):
+            num_gpus = est.fsdp_est.get_number_of_gpus()
+        elif job_config.fm.technique == TuningTechnique.LORA:
+            num_gpus = est.num_gpus
+        else:
+            num_gpus = 1
+
+        job_config.infra.numGpusPerPod = num_gpus
+
+    # No suitable configuration found
+    if num_gpus == -1:
+        raise ValueError("Input configuration is infeasible!")
 
     return MemoryEstimate(
         total_mem_estimate,
@@ -58,3 +79,88 @@ def estimate_memory(
         optimizer_memory,
         num_gpus,
     )
+
+
+def _estimate_tokens_and_time(
+    conf: JobConfig,
+    model_path: str = None,
+    lookup_data_path: str = None,
+) -> tuple[float, float]:
+    token_est = None
+    if conf.data.te_approach == 0:
+        token_est = TokenEstimator0(conf.data)
+
+    speed_est = HybridSpeedEstimator(
+        conf.fm, conf.hf_training, conf.infra, lookup_data_path, model_path
+    )
+
+    estimated_tps = speed_est.get_tps()
+    if estimated_tps is not None:
+        tps = float(estimated_tps)
+    else:
+        # logger.warn("Could not calculate tps, defaulting to 1.")
+        tps = 1
+
+    if token_est is not None:
+        tokens_per_sample = int(
+            token_est.get_estimated_batch_width(
+                conf.hf_training.per_device_train_batch_size
+            )
+        )
+        total_tokens = int(token_est.get_total_tokens())
+
+        # get the update tps for this estimate token width
+        estimated_tps = speed_est.get_tps(tokens_per_sample)
+        if estimated_tps is not None:
+            tps = float(estimated_tps)
+        else:
+            # logger.warn("Could not calculate tps, defaulting to 1.")
+            tps = 1
+
+        time = total_tokens / tps
+    else:
+        # logger.warn("Could not get a total tokens to calculate time, setting time to 0.")
+        time = 0
+    return (tps, time)
+
+
+def estimate_time(
+    estimate_input: EstimateInput, model_path: str = None
+) -> TimeEstimate:
+    """
+    Estimate time needed for training. Use hybdrid model by default.
+    """
+    if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
+        raise ValueError("Did not receive a training job config")
+
+    # Only going to process first job_config for now
+    job_config = estimate_input.job_configs[0]
+
+    _, time = _estimate_tokens_and_time(
+        job_config, model_path, estimate_input.estimator_metadata.base_data_path
+    )
+
+    return TimeEstimate(time)
+
+
+def estimate_tokens(
+    estimate_input: EstimateInput, model_path: str = None
+) -> TokensEstimate:
+    if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
+        raise ValueError("Did not receive a training job config")
+
+    # Only going to process first job_config for now
+    job_config = estimate_input.job_configs[0]
+
+    tps, _ = _estimate_tokens_and_time(
+        job_config, model_path, estimate_input.estimator_metadata.base_data_path
+    )
+
+    return TokensEstimate(tps)
+
+
+def estimate_cost(
+    estimate_input: EstimateInput, model_path: str = None
+) -> CostEstimate:
+
+    raise NotImplementedError("Not supported in this version.")

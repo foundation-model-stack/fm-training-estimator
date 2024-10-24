@@ -18,6 +18,21 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "wheel",
+  "tox",
+  "pre-commit",
+  "transformers",
+  "peft",
+  "setuptools",
+  "fire",
+  "pandas",
+  "xgboost",
+  "scikit-learn",
+  "gradio",
+  "datasets",
+  "uvicorn"
+]
 
 [project.urls]
 Source = "https://github.com/foundation-model-stack/fm-training-estimator"

@@ -136,8 +136,7 @@ class FullParameterTuningEstimator:
         elif self.precision == "float16" or self.precision == "bfloat16":
             multiplier = 2
         else:
-            print("no support for the precision")
-            exit(1)
+            raise ValueError("no support for the precision")
         size = self.num_of_trainable_params * multiplier
         if readable:
             return fmt_size(size)
@@ -166,8 +165,7 @@ class FullParameterTuningEstimator:
         elif self.optimizer == OptimizerNames.SGD:
             multiplier = 4
         else:
-            print("computation for other optmizers is not implemented")
-            exit(1)
+            raise NotImplementedError("computation for optimizer is not implemented")
         size = self.num_of_trainable_params * multiplier
         if readable:
             return fmt_size(size)
