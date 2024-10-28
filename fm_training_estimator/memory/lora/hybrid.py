@@ -83,7 +83,7 @@ class HybridLoraEstimator:
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": self.fm.block_size,
             "gpu_model": self.ia.gpuModel,
-            "method": self.fm.technique.value,
+            "method": self.fm.technique,
         }
 
         if self.lookup_est is not None:

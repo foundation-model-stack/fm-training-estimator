@@ -1,9 +1,6 @@
 # Standard
 import logging
 
-# First Party
-from fm_training_estimator.config.arguments import TuningTechnique
-
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments
 from ...data import format_query
@@ -48,9 +45,7 @@ class HybridSpeedEstimator:
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": seqlen,
             "gpu_model": self.ia.gpuModel,
-            "method": "fsdp"
-            if self.fm.technique == TuningTechnique.FULL
-            else self.fm.technique.value,
+            "method": self.fm.technique,
         }
 
         lookup_query = format_query(lookup_query, self.lookup_est.get_data_format())
@@ -84,7 +79,7 @@ class HybridSpeedEstimator:
             "batch_size": self.ta.per_device_train_batch_size,
             "seq_len": int(seqlen),
             "gpu_model": self.ia.gpuModel,
-            "method": self.fm.technique.value,
+            "method": self.fm.technique,
         }
         params = format_query(
             lookup_query, self.reg_est.get_data_format(), only_values=True
