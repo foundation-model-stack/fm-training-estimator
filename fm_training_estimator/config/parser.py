@@ -49,6 +49,7 @@ def parse(
                 PeftLoraConfig,
             ]
         )
+
         return arg_parser.parse_dict(config)
     except Exception as e:  # pylint: disable=broad-except
         logger.error(

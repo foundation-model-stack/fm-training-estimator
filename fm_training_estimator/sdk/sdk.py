@@ -6,7 +6,6 @@ from fm_training_estimator.config.arguments import (
     MemoryEstimate,
     TimeEstimate,
     TokensEstimate,
-    TuningTechnique,
 )
 from fm_training_estimator.memory.hybrid.hybrid import HybridEstimator
 from fm_training_estimator.memory.lora.hybrid import HybridLoraEstimator
@@ -19,7 +18,7 @@ from ..utils import fmt_size
 
 
 def _get_hybrid_estimator(conf: JobConfig, model_path: str = None):
-    if conf.fm.technique == TuningTechnique.LORA:
+    if conf.fm.technique == "lora":
         return HybridLoraEstimator(
             conf.fm,
             conf.hf_training,
@@ -56,11 +55,9 @@ def estimate_memory(
     num_gpus = job_config.infra.numGpusPerPod
 
     if num_gpus == 0:
-        if job_config.fm.technique == TuningTechnique.FULL and is_fsdp(
-            job_config.hf_training
-        ):
+        if job_config.fm.technique == "full" and is_fsdp(job_config.hf_training):
             num_gpus = est.fsdp_est.get_number_of_gpus()
-        elif job_config.fm.technique == TuningTechnique.LORA:
+        elif job_config.fm.technique == "lora":
             num_gpus = est.num_gpus
         else:
             num_gpus = 1

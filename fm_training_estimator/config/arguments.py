@@ -51,7 +51,11 @@ class InfraArguments:
 
     numGpusPerPod: int = field(
         default=0,
-        metadata={"help": ("number of gpus requested per pod. Setting to 0 for auto-discover.")},
+        metadata={
+            "help": (
+                "number of gpus requested per pod. Setting to 0 for auto-discover."
+            )
+        },
     )
 
     numPods: int = field(
@@ -65,16 +69,6 @@ class InfraArguments:
         default="A100",
         metadata={"help": ("model of gpu used")},
     )
-
-
-class TuningTechnique(Enum):
-    """Enumerate different tuning techniques the FM Training Estimator can perform estimation on."""
-
-    LORA = "lora"
-    """LoRA tuning technique."""
-
-    FULL = "full"
-    """Full fine-tuning technique."""
 
 
 @dataclass
@@ -128,8 +122,8 @@ class FMArguments:
         },
     )
 
-    technique: TuningTechnique = field(
-        default=TuningTechnique.FULL,
+    technique: str = field(
+        default="full",
         metadata={"help": ("Fine-tuning technique being used")},
     )
 
