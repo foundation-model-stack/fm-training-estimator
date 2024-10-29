@@ -34,8 +34,16 @@ def _get_hybrid_estimator(conf: JobConfig, model_path: str = None):
 def estimate_memory(
     estimate_input: EstimateInput, model_path: str = None
 ) -> MemoryEstimate:
-    """
-    Estimate memory needed for training. Use hybdrid model by default.
+    """Estimate memory needed for training. This method uses hybdrid model by default.
+
+    Args:
+        estimate_input (fm_training_estimator.config.arguments.EstimateInput): the input for this estimation
+            This input includes training job configs and optionally, metadata about this estimate run.
+        model_path (str, optional): path to the trained xgboost model for the estimator to use for this run.
+
+    Returns:
+        fm_training_estimator.config.arguments.MemoryEstimate: the memory estimate of this run.
+
     """
 
     if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
@@ -124,8 +132,16 @@ def _estimate_tokens_and_time(
 def estimate_time(
     estimate_input: EstimateInput, model_path: str = None
 ) -> TimeEstimate:
-    """
-    Estimate time needed for training. Use hybdrid model by default.
+    """Estimate time needed for training. This method uses hybdrid model by default.
+
+    Args:
+        estimate_input (fm_training_estimator.config.arguments.EstimateInput): the input for this estimation
+            This input includes training job configs and optionally, metadata about this estimate run.
+        model_path (str, optional): path to the trained xgboost model for the estimator to use for this run.
+
+    Returns:
+        fm_training_estimator.config.arguments.TimeEstimate: the time estimate of this run.
+
     """
     if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
         raise ValueError("Did not receive a training job config")
@@ -143,6 +159,17 @@ def estimate_time(
 def estimate_tokens(
     estimate_input: EstimateInput, model_path: str = None
 ) -> TokensEstimate:
+    """Estimate tokens throughput for a training. This method uses hybdrid model by default.
+
+    Args:
+        estimate_input (fm_training_estimator.config.arguments.EstimateInput): the input for this estimation
+            This input includes training job configs and optionally, metadata about this estimate run.
+        model_path (str, optional): path to the trained xgboost model for the estimator to use for this run.
+
+    Returns:
+        fm_training_estimator.config.arguments.TokensEstimate: the tokens throughput estimate of this run.
+
+    """
     if estimate_input.job_configs is None or len(estimate_input.job_configs) == 0:
         raise ValueError("Did not receive a training job config")
 
@@ -159,5 +186,15 @@ def estimate_tokens(
 def estimate_cost(
     estimate_input: EstimateInput, model_path: str = None
 ) -> CostEstimate:
+    """Estimate cost for a training. This method uses hybdrid model by default. (Not yet supported)
 
+    Args:
+        estimate_input (fm_training_estimator.config.arguments.EstimateInput): the input for this estimation
+            This input includes training job configs and optionally, metadata about this estimate run.
+        model_path (str, optional): path to the trained xgboost model for the estimator to use for this run.
+
+    Returns:
+        fm_training_estimator.config.arguments.CostEstimate: the cost estimate of this run.
+
+    """
     raise NotImplementedError("Not supported in this version.")
