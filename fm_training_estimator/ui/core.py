@@ -1,6 +1,3 @@
-# First Party
-from fm_training_estimator.config.arguments import TuningTechnique
-
 # Local
 from ..config import is_fsdp, parse
 from ..memory import HybridEstimator, HybridLoraEstimator
@@ -14,7 +11,7 @@ def run(config, lookup_data_path=None, model_path=None):
     res = {}
     fm, ta, ia, da, la = parse(config)
 
-    if fm.technique == TuningTechnique.LORA:
+    if fm.technique == "lora":
         est = HybridLoraEstimator(fm, ta, ia, la, lookup_data_path, model_path)
     else:
         est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)
@@ -34,9 +31,9 @@ def run(config, lookup_data_path=None, model_path=None):
     res["num_gpus"] = ia.numGpusPerPod
 
     if ia.numGpusPerPod == 0:
-        if fm.technique == TuningTechnique.FULL and is_fsdp(ta):
+        if fm.technique == "full" and is_fsdp(ta):
             res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
-        elif fm.technique == TuningTechnique.LORA:
+        elif fm.technique == "lora":
             res["num_gpus"] = est.num_gpus
         else:
             res["num_gpus"] = 1
@@ -53,7 +50,7 @@ def run(config, lookup_data_path=None, model_path=None):
 
     speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
     res["tps"] = float(speed_est.get_tps())
-    return res
+
     if token_est is not None:
         res["tokens_per_sample"] = int(
             token_est.get_estimated_batch_width(ta.per_device_train_batch_size)
