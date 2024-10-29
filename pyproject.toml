@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fm_training_estimator"
+version = "0.0.1"
+authors = [
+  { name="Angel Luu", email="angel.luu@us.ibm.com" },
+  { name="Chander Govindarajan", email="mail@chandergovind.org" },
+]
+description = "A package of Estimators for Large Language Model Training."
+license = {text = "Apache-2.0"}
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "wheel",
+  "tox",
+  "pre-commit",
+  "transformers",
+  "peft",
+  "setuptools",
+  "fire",
+  "pandas",
+  "xgboost",
+  "scikit-learn",
+  "gradio",
+  "datasets",
+  "uvicorn"
+]
+
+[project.urls]
+Source = "https://github.com/foundation-model-stack/fm-training-estimator"

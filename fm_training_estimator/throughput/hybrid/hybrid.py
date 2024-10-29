@@ -69,7 +69,6 @@ class HybridSpeedEstimator:
             res = self.check_lookup(seqlen)
             if res is not None:
                 return res
-
         if self.reg_est is None:
             return res
 

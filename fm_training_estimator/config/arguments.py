@@ -50,8 +50,12 @@ class InfraArguments:
     """dataclass for infrastructure arguments"""
 
     numGpusPerPod: int = field(
-        default=-1,
-        metadata={"help": ("number of gpus requested per pod")},
+        default=0,
+        metadata={
+            "help": (
+                "number of gpus requested per pod. Setting to 0 for auto-discover."
+            )
+        },
     )
 
     numPods: int = field(
@@ -65,16 +69,6 @@ class InfraArguments:
         default="A100",
         metadata={"help": ("model of gpu used")},
     )
-
-
-class TuningTechnique(Enum):
-    """Enumerate different tuning techniques the FM Training Estimator can perform estimation on."""
-
-    LORA = "lora"
-    """LoRA tuning technique."""
-
-    FULL = "full"
-    """Full fine-tuning technique."""
 
 
 @dataclass
@@ -128,8 +122,8 @@ class FMArguments:
         },
     )
 
-    technique: TuningTechnique = field(
-        default=TuningTechnique.FULL,
+    technique: str = field(
+        default="full",
         metadata={"help": ("Fine-tuning technique being used")},
     )
 
@@ -178,9 +172,16 @@ class EstimatorMethod(Enum):
 class EstimatorMetadata:
     """Metadata for the FM Training Estimator."""
 
-    base_data_path: str
-    method: List[EstimatorMethod]
-    token_estimation_version: str
+    base_data_path: str = field(
+        default=None, metadata={"help": ("path to the data path for training data")}
+    )
+    method: EstimatorMethod = field(
+        default=EstimatorMethod.HYBRID,
+        metadata={"help": ("enum method the estimator should use")},
+    )
+    token_estimation_version: str = field(
+        default=0, metadata={"help": ("version of token estimator to use")}
+    )
 
 
 @dataclass
@@ -225,7 +226,7 @@ class MemoryEstimate:
 
 
 @dataclass
-class TokenEstimate:
+class TokensEstimate:
     """The estimated token response to estimate_token function."""
 
     tps: float
@@ -244,5 +245,5 @@ class Estimate:
 
     memory: MemoryEstimate
     time: TimeEstimate
-    tokens: TokenEstimate
+    tokens: TokensEstimate
     cost: CostEstimate
