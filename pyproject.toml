@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fm_training_estimator"
+name = "fm-training-estimator"
 version = "0.0.1"
 authors = [
   { name="Angel Luu", email="angel.luu@us.ibm.com" },
