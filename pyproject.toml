@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fm-training-estimator"
-version = "0.0.1"
+name = "fm_training_estimator"
+dynamic = ["version"]
 authors = [
   { name="Angel Luu", email="angel.luu@us.ibm.com" },
   { name="Chander Govindarajan", email="mail@chandergovind.org" },
@@ -19,7 +19,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "wheel",
   "tox",
   "pre-commit",
   "transformers",
