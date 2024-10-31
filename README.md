@@ -35,7 +35,7 @@ Fully theory. Simulation based models available.
 
 ## Usage
 
-You can use the library `fm_training_estimator` as a Python package by installing it via pip, see [installation](#install), [build a regession model](#build-a-regression-model-for-learned-prediction-method) and [using the lirbary](#use-the-library-to-get-estimates). If you'd like to construct the estimator service with a [Web UI](#make-estimates-via-a-web-ui) via FastAPI or [build a docker image](#build-a-docker-container-image), clone the repository in your local machine before following the instructions in those sections.
+You can use the library `fm_training_estimator` as a Python package by installing it via pip, see [installation](#install), [build a regression model](#build-a-regression-model-for-learned-prediction-method) and [using the library](#use-the-library-to-get-estimates). If you'd like to construct the estimator service with a [Web UI](#make-estimates-via-a-web-ui) via FastAPI or [build a docker image](#build-a-docker-container-image), clone the repository in your local machine before following the instructions in those sections.
 
 Within your working directory, it is recommended to create a virtual environment to ensure no conflicts in dependencies.
 
