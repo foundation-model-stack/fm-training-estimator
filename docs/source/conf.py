@@ -42,7 +42,14 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "**ex1**",
+    "**test**",
+    "**_version**",
+]
 
 # -- autoapi configuration ---------------------------------------------------
 
@@ -51,9 +58,6 @@ autoapi_type = "python"
 
 # Source code to parse to generate API docs relative to 'docs/source' directory
 autoapi_dirs = [os.path.join("..", "..", "fm_training_estimator")]
-
-autoapi_ignore = ["*ex1*", "*test*", "*_version.py"]
-
 
 # -- Options for HTML output -------------------------------------------------
 
