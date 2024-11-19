@@ -4,6 +4,7 @@ from enum import Enum
 from typing import List, Optional
 
 # Third Party
+from dataclass_wizard import JSONWizard
 from peft.tuners.lora import LoraConfig
 from peft.tuners.prompt_tuning import PromptTuningConfig
 from transformers import TrainingArguments
@@ -196,7 +197,7 @@ class JobConfig:
 
 
 @dataclass
-class EstimateInput:
+class EstimateInput(JSONWizard):
     """
     The dataclass that is an input to a estimate function.
     It includes a list of different training job configs and metadata about the estimator.

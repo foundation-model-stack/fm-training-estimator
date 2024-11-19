@@ -30,6 +30,7 @@ dependencies = [
   "scikit-learn",
   "gradio",
   "datasets",
+  "dataclass-wizard",
   "uvicorn"
 ]
 
