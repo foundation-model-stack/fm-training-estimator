@@ -89,11 +89,8 @@ Example of an `EstimateInput` with all fields defined:
       "target_modules": "[q_proj, v_proj]"
     },
     "peft_qlora": { // PeftQLoraConfig
-      "r": 4,
-      "lora_alpha": 8,
-      "lora_dropout": 0.1,
-      "target_modules": "[q_proj, v_proj]",
-      "quant_type": "nf4"
+      "quant_type": "nf4",
+      "use_double_quant": False
     }
   }]
 }

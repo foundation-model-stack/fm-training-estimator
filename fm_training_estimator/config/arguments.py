@@ -33,7 +33,7 @@ class PeftLoraConfig:
     target_modules: List[str] = field(default_factory=lambda: ["q_proj", "v_proj"])
 
 @dataclass
-class PeftLoraConfig:
+class PeftQLoraConfig:
     """Dataclass for QLoRA tuning config
 
     """
