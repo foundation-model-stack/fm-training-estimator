@@ -12,13 +12,14 @@ from .arguments import (
     HFTrainingArguments,
     InfraArguments,
     PeftLoraConfig,
+    PeftQLoraConfig,
 )
 
 
 def parse(
     config: Union[Dict, str]
 ) -> Tuple[
-    FMArguments, HFTrainingArguments, InfraArguments, DataArguments, PeftLoraConfig
+    FMArguments, HFTrainingArguments, InfraArguments, DataArguments, PeftLoraConfig, PeftQLoraConfig
 ]:
     """parse config and return respective dataclass objects
 
@@ -26,7 +27,7 @@ def parse(
         config (Union[Dict, str]): path to config file or a config python dict
 
     Returns:
-        Tuple[FMArguments, TrainingArguments, PeftLoraConfig, PeftPromptTuningConfig]:
+        Tuple[FMArguments, TrainingArguments, PeftLoraConfig, PeftQLoraConfig, PeftPromptTuningConfig]:
             dataclass objects
     """
     try:
@@ -47,6 +48,7 @@ def parse(
                 InfraArguments,
                 DataArguments,
                 PeftLoraConfig,
+                PeftQLoraConfig,
             ]
         )
 

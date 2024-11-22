@@ -44,7 +44,7 @@ Both alternatives provide more value to consumers. However does not provide the 
 
 ## High Level Design
 
-- The `EstimateInput` data class (not all fields are required) defines the set of configs the library will use to calculate the results. This includes a list of instances of `Config` data class which in turns includes different types of configs (hf training args `HFArguments`, fms-hf-tuning additional args `FMArguments`, data args `DataArguments`, infrastructure args `InfraArguments` and peft lora args `PeftLoraConfig`), and `EstimatorConfig` with metadata parameters. The input can be read from a json file using `--input_file_path` or `-f`.
+- The `EstimateInput` data class (not all fields are required) defines the set of configs the library will use to calculate the results. This includes a list of instances of `Config` data class which in turns includes different types of configs (hf training args `HFArguments`, fms-hf-tuning additional args `FMArguments`, data args `DataArguments`, infrastructure args `InfraArguments`, peft lora args `PeftLoraConfig` and peft qlora args `PeftQLoraConfig`), and `EstimatorConfig` with metadata parameters. The input can be read from a json file using `--input_file_path` or `-f`.
 
 Example of an `EstimateInput` with all fields defined:
 ```json
@@ -87,6 +87,13 @@ Example of an `EstimateInput` with all fields defined:
       "lora_alpha": 8,
       "lora_dropout": 0.1,
       "target_modules": "[q_proj, v_proj]"
+    },
+    "peft_qlora": { // PeftQLoraConfig
+      "r": 4,
+      "lora_alpha": 8,
+      "lora_dropout": 0.1,
+      "target_modules": "[q_proj, v_proj]",
+      "quant_type": "nf4"
     }
   }]
 }

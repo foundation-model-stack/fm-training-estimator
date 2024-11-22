@@ -11,7 +11,7 @@ Estimate resource consumption - memory, tokens, time etc for training and fine-t
 | Full (1 gpu)       | :heavy_check_mark: |
 | FSDP (multi)       | :heavy_check_mark: |
 | Lora (1 gpu)       | :heavy_check_mark: |
-| QLora (1 gpu)      | Planned            |
+| QLora (1 gpu)      | :heavy_check_mark: |
 | Speculators        | Planned            |
 | Tensor Parallelism | Planned            |
 

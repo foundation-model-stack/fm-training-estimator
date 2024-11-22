@@ -31,6 +31,14 @@ class PeftLoraConfig:
     lora_dropout: float = field(default=0.1)
     target_modules: str = field(default="[q_proj, v_proj]")
 
+@dataclass
+class PeftLoraConfig:
+    """Dataclass for QLoRA tuning config
+
+    """
+    quant_type: str = field(default="nf4")
+    use_double_quant: bool = field(default=False)
+
 
 @dataclass
 class HFTrainingArguments(TrainingArguments):
@@ -193,6 +201,7 @@ class JobConfig:
     data: DataArguments = field(default_factory=DataArguments)
     infra: InfraArguments = field(default_factory=InfraArguments)
     peft_lora: PeftLoraConfig = field(default_factory=PeftLoraConfig)
+    peft_qlora: PeftQLoraConfig = field(default_factory=PeftQLoraConfig)
 
 
 @dataclass
