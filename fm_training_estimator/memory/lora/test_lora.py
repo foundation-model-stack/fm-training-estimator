@@ -7,7 +7,7 @@ from .lora import LoraEstimator
 
 
 def test_lora():
-    fm, ta, _, _, la = parse(
+    fm, ta, _, _, la, _ = parse(
         {
             "base_model_path": "codellama/CodeLlama-13b-hf",
             "per_device_train_batch_size": 1,

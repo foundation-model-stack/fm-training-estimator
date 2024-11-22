@@ -32,7 +32,7 @@ class PeftLoraConfig:
     target_modules: str = field(default="[q_proj, v_proj]")
 
 @dataclass
-class PeftLoraConfig:
+class PeftQLoraConfig:
     """Dataclass for QLoRA tuning config
 
     """
