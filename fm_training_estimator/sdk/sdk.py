@@ -12,6 +12,7 @@ from fm_training_estimator.config.arguments import (
 )
 from fm_training_estimator.memory.hybrid.hybrid import HybridEstimator
 from fm_training_estimator.memory.lora.hybrid import HybridLoraEstimator
+from fm_training_estimator.memory.qlora.hybrid import HybridQLoraEstimator
 from fm_training_estimator.throughput.hybrid.hybrid import HybridSpeedEstimator
 from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
 
@@ -32,6 +33,16 @@ def _get_hybrid_estimator(
             conf.infra,
             conf.peft_lora,
             lookup_data_path,
+            model_path,
+        )
+    elif conf.fm.technique == "qlora":
+        return HybridQLoraEstimator(
+            conf.fm,
+            conf.hf_training,
+            conf.infra,
+            conf.peft_lora,
+            conf.peft_qlora,
+            None,
             model_path,
         )
     else:
@@ -81,7 +92,7 @@ def estimate_memory(
     if num_gpus == 0:
         if job_config.fm.technique == "full" and is_fsdp(job_config.hf_training):
             num_gpus = est.fsdp_est.get_number_of_gpus()
-        elif job_config.fm.technique == "lora":
+        elif job_config.fm.technique == "lora" or job_config.fm.technique == "qlora":
             num_gpus = est.num_gpus
         else:
             num_gpus = 1
