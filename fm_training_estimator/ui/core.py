@@ -1,6 +1,6 @@
 # Local
 from ..config import is_fsdp, parse
-from ..memory import HybridEstimator, HybridLoraEstimator
+from ..memory import HybridEstimator, HybridLoraEstimator, HybridQLoraEstimator
 from ..throughput import HybridSpeedEstimator
 from ..tokens import TokenEstimator0
 from ..utils import fmt_size
@@ -9,10 +9,12 @@ from ..utils import fmt_size
 def run(config, lookup_data_path=None, model_path=None):
 
     res = {}
-    fm, ta, ia, da, la = parse(config)
+    fm, ta, ia, da, la, qla = parse(config)
 
     if fm.technique == "lora":
         est = HybridLoraEstimator(fm, ta, ia, la, lookup_data_path, model_path)
+    elif fm.technique == "qlora":
+        est = HybridQLoraEstimator(fm, ta, ia, la, qla, lookup_data_path, model_path)
     else:
         est = HybridEstimator(fm, ta, ia, lookup_data_path, model_path)
 
@@ -33,7 +35,7 @@ def run(config, lookup_data_path=None, model_path=None):
     if ia.numGpusPerPod == 0:
         if fm.technique == "full" and is_fsdp(ta):
             res["num_gpus"] = est.fsdp_est.get_number_of_gpus()
-        elif fm.technique == "lora":
+        elif fm.technique == "lora" or fm.technique == "qlora":
             res["num_gpus"] = est.num_gpus
         else:
             res["num_gpus"] = 1

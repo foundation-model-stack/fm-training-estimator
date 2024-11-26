@@ -5,6 +5,7 @@ from .arguments import (
     HFTrainingArguments,
     InfraArguments,
     PeftLoraConfig,
+    PeftQLoraConfig,
     PeftPromptTuningConfig,
 )
 from .parser import parse
@@ -14,6 +15,7 @@ __all__ = [
     "FMArguments",
     "PeftPromptTuningConfig",
     "PeftLoraConfig",
+    "PeftQLoraConfig",
     "HFTrainingArguments",
     "InfraArguments",
     "DataArguments",

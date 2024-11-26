@@ -6,7 +6,7 @@ from .full import FullParameterTuningEstimator
 
 
 def test_full():
-    fm, ta, _, _, _ = parse({})
+    fm, ta, _, _, _, _ = parse({})
     est = FullParameterTuningEstimator(fm, ta)
 
     mm = est.calculate_model_memory()
@@ -15,7 +15,7 @@ def test_full():
 
 
 def test_custom_model():
-    fm, ta, _, _, _ = parse({"base_model_path": "ibm-granite/granite-8b-code-base"})
+    fm, ta, _, _, _, _ = parse({"base_model_path": "ibm-granite/granite-8b-code-base"})
     est = FullParameterTuningEstimator(fm, ta)
 
     mm = est.calculate_model_memory()
@@ -24,7 +24,7 @@ def test_custom_model():
 
 
 def test_half_precision():
-    fm, ta, _, _, _ = parse(
+    fm, ta, _, _, _, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "torch_dtype": "float16",
@@ -38,7 +38,7 @@ def test_half_precision():
 
 
 def test_gradient_checkpointing():
-    fm, ta, _, _, _ = parse(
+    fm, ta, _, _, _, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-8b-code-base",
         }

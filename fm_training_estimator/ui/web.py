@@ -181,7 +181,7 @@ def web(
                 gpu_model.change(update_gpu_memory, gpu_model, gpu_mem)
 
                 technique = gr.Dropdown(
-                    ["full", "lora"],
+                    ["full", "lora", "qlora"],
                     value="full",
                     label="Technique",
                     info="All approaches use FSDP to scale. Other techniques will be added later!",

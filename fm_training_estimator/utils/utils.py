@@ -31,7 +31,7 @@ def unmarshal(path: str) -> Dict:
         return yaml.safe_load(f)
 
 
-def get_size_from_precision(precision: str) -> int:
+def get_size_from_precision(precision: str) -> float:
     """return multiplier based on the precision
 
     Args:
@@ -44,6 +44,8 @@ def get_size_from_precision(precision: str) -> int:
         return 2
     if precision == "float32":
         return 4
+    if precision == "nf4":
+        return 0.5
     return 4
 
 
