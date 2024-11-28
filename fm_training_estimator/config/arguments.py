@@ -168,6 +168,11 @@ class DataArguments:
         metadata={"help": ("allow dataset with a loading script")}
     )
 
+    dataset_config_file: str = field(
+        default=None,
+        metadata={"help": ("dataset configuration file in case dataset is not available/provided")},
+    )
+
 class EstimatorMethod(Enum):
     """Enumerate different estimation models the FM Training Estimator is to use to make an estimation."""
 
