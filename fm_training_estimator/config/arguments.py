@@ -135,3 +135,8 @@ class DataArguments:
         default=True,
         metadata={"help": ("allow dataset with a loading script")}
     )
+
+    dataset_config_file: str = field(
+        default=None,
+        metadata={"help": ("dataset configuration file in case dataset is not available/provided")},
+    )
