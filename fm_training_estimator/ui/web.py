@@ -30,6 +30,7 @@ def to_config(
     dataset_field,
     dataset_split,
     dataset_config,
+    dataset_config_file,
 ):
     config = {
         "base_model_path": base_model_path,
@@ -45,6 +46,7 @@ def to_config(
         "dataset_text_field": dataset_field,
         "dataset_split": dataset_split,
         "dataset_config_name": dataset_config,
+        "dataset_config_file": dataset_config_file,
     }
 
     # can be 0, for auto, or > 1 for manual
@@ -197,21 +199,72 @@ def web(
                             value="disabled",
                             label="Token Estimation Approach",
                         )
-
+                            
+                        
                         dataset = gr.Textbox(
                             label="Dataset",
-                            info="name/path of dataset in HF datasets format",
+                            info="Name/path of dataset in HF datasets format",
+                            visible=False,
                         )
 
                         dataset_field = gr.Textbox(
                             label="Dataset Field",
                             value="text",
-                            info="field to use during training",
+                            info="Field to use during training",
+                            visible=False,
                         )
 
-                        dataset_split = gr.Textbox(label="Dataset Split", value="test")
+                        dataset_split = gr.Textbox(
+                            label="Dataset Split", 
+                            value="test", 
+                            visible=False
+                        )
 
-                        dataset_config = gr.Textbox(label="Dataset Config")
+                        dataset_config = gr.Textbox(
+                            label="Dataset Config", 
+                            visible=False
+                        )
+
+                        dataset_config_file = gr.Textbox(
+                            label="Name/Path of Dataset Config File",
+                            # file_types=[".json", ".yaml"],
+                            visible=False
+                        )
+
+                        # Function to toggle visibility
+                        def toggle_visibility(value):
+                            if value == "0":
+                                return {
+                                    dataset: gr.update(visible=True),
+                                    dataset_field: gr.update(visible=True),
+                                    dataset_split: gr.update(visible=True),
+                                    dataset_config: gr.update(visible=True),  # visible only when value == 1
+                                    dataset_config_file: gr.update(visible=False),
+                                }
+                            elif value == "2":
+                                return {
+                                    dataset: gr.update(visible=False),
+                                    dataset_field: gr.update(visible=False),
+                                    dataset_split: gr.update(visible=False),
+                                    dataset_config: gr.update(visible=False),  # visible only when value == 1
+                                    dataset_config_file: gr.update(visible=True),
+                                }
+                            else:
+                                return {
+                                    dataset: gr.update(visible=False),
+                                    dataset_field: gr.update(visible=False),
+                                    dataset_split: gr.update(visible=False),
+                                    dataset_config: gr.update(visible=False),  # visible only when value == 1
+                                    dataset_config_file: gr.update(visible=False),
+                                }
+                    
+
+                        # Bind the visibility toggle to the dropdown
+                        token_est_approach.change(
+                            toggle_visibility,
+                            token_est_approach,
+                            [dataset, dataset_field, dataset_split, dataset_config, dataset_config_file],
+                        )
 
                 submit_btn = gr.Button("Submit")
                 to_conf_btn = gr.Button("Gen Config")
@@ -231,6 +284,7 @@ def web(
                     dataset_field,
                     dataset_split,
                     dataset_config,
+                    dataset_config_file
                 ]
             with gr.Column():
                 with gr.Accordion("Estimation"):
