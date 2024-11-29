@@ -1,3 +1,5 @@
+import json
+
 # Third Party
 import fire
 import gradio as gr
@@ -78,6 +80,24 @@ def estimate(*args):
         prev_conf,
         prev_out,
     ]
+
+
+def process_file(file_path):
+    """
+    Function to process the uploaded file.
+    Example: Reads the file and prints its content.
+    """
+    try:
+        with open(file_path, "r") as file:
+            content = json.loads(file)
+        # print(f"File content:\n{content}")
+        return content
+    except FileNotFoundError:
+        print("File not found!")
+        return "Error: File not found."
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return f"Error: {e}"
 
 
 def web(
@@ -210,9 +230,8 @@ def web(
                             visible=False
                         )
 
-                        dataset_config_file = gr.Textbox(
-                            label="Name/Path of Dataset Config File",
-                            # file_types=[".json", ".yaml"],
+                        dataset_config_file = gr.File(
+                            label="Upload dataset configuration file", 
                             visible=False
                         )
 
