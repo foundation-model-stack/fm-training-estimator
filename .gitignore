@@ -131,3 +131,5 @@ dmypy.json
 
 .*~
 /workdir/
+
+.DS_Store
