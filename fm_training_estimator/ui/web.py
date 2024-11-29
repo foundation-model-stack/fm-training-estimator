@@ -82,24 +82,6 @@ def estimate(*args):
     ]
 
 
-def process_file(file_path):
-    """
-    Function to process the uploaded file.
-    Example: Reads the file and prints its content.
-    """
-    try:
-        with open(file_path, "r") as file:
-            content = json.loads(file)
-        # print(f"File content:\n{content}")
-        return content
-    except FileNotFoundError:
-        print("File not found!")
-        return "Error: File not found."
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return f"Error: {e}"
-
-
 def web(
     model_whitelist=None,
     data_path=None,
