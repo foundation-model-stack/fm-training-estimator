@@ -87,13 +87,14 @@ class HybridLoraEstimator:
         }
 
         if self.lookup_est is not None:
-            logging.info("HybridLora: attempting lookup")
             lookup_query = format_query(
                 lookup_query_base, self.lookup_est.get_data_format()
             )
+            logging.debug("HybridLora: lookup_query is: %s", lookup_query)
             res = self.lookup_est.run(lookup_query)
             if res.empty:
                 lookup_mem = None
+                logging.debug("Lookup: no match found by lookup")
             else:
                 lookup_mem = res["memory"][0:1].item()
             if lookup_mem is not None:
@@ -111,3 +112,5 @@ class HybridLoraEstimator:
             return act
 
         # No fall back here
+        # If we reach here, we don't have a memory estimate
+        logging.warning("Could not estimate memory by Hybrid Lora Estimator")

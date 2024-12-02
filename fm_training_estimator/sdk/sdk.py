@@ -16,19 +16,24 @@ from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
 from ..config import is_fsdp
 from ..utils import fmt_size
 
+#Standard
+import logging
 
-def _get_hybrid_estimator(conf: JobConfig, model_path: str = None):
+logger = logging.getLogger("ESTIMATOR")
+
+
+def _get_hybrid_estimator(conf: JobConfig, model_path: str = None, lookup_data_path: str = None):
     if conf.fm.technique == "lora":
         return HybridLoraEstimator(
             conf.fm,
             conf.hf_training,
             conf.infra,
             conf.peft_lora,
-            None,
+            lookup_data_path,
             model_path,
         )
     else:
-        return HybridEstimator(conf.fm, conf.hf_training, conf.infra, None, model_path)
+        return HybridEstimator(conf.fm, conf.hf_training, conf.infra, lookup_data_path, model_path)
 
 
 def estimate_memory(
@@ -52,7 +57,12 @@ def estimate_memory(
     # Only going to process first job_config for now
     job_config = estimate_input.job_configs[0]
 
-    est = _get_hybrid_estimator(job_config, model_path)
+    if estimate_input.estimator_metadata:
+        lookup_data_path = estimate_input.estimator_metadata.base_data_path
+    if lookup_data_path is None:
+        logger.warning("No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability.")
+
+    est = _get_hybrid_estimator(job_config, model_path, lookup_data_path)
 
     total_mem_estimate = fmt_size(est.get_total_mem_estimate())
     activation_memory = fmt_size(est.calculate_activation_memory())
@@ -149,6 +159,11 @@ def estimate_time(
     # Only going to process first job_config for now
     job_config = estimate_input.job_configs[0]
 
+    if estimate_input.estimator_metadata:
+        lookup_data_path = estimate_input.estimator_metadata.base_data_path
+    if lookup_data_path is None:
+        logger.warning("No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability.")
+
     _, time = _estimate_tokens_and_time(
         job_config, model_path, estimate_input.estimator_metadata.base_data_path
     )
@@ -175,6 +190,11 @@ def estimate_tokens(
 
     # Only going to process first job_config for now
     job_config = estimate_input.job_configs[0]
+
+    if estimate_input.estimator_metadata:
+        lookup_data_path = estimate_input.estimator_metadata.base_data_path
+    if lookup_data_path is None:
+        logger.warning("No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability.")
 
     tps, _ = _estimate_tokens_and_time(
         job_config, model_path, estimate_input.estimator_metadata.base_data_path
