@@ -30,7 +30,7 @@ class PeftLoraConfig:
 
     lora_alpha: int = field(default=8)
     lora_dropout: float = field(default=0.1)
-    target_modules: str = field(default="[q_proj, v_proj]")
+    target_modules: List[str] = field(default_factory=lambda: ["q_proj", "v_proj"])
 
 
 @dataclass
