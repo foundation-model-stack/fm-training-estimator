@@ -1,3 +1,6 @@
+# Standard
+import logging
+
 # Third Party
 from accelerate import init_empty_weights
 from peft import LoraConfig, get_peft_model
@@ -8,10 +11,8 @@ from ...config import FMArguments, HFTrainingArguments, PeftLoraConfig
 from ...utils import fmt_size, get_size_from_precision
 from ..full import FullParameterTuningEstimator
 
-# Standard
-import logging
-
 logger = logging.getLogger("LoRA_EST")
+
 
 class LoraEstimator(FullParameterTuningEstimator):
     def __init__(
@@ -31,7 +32,15 @@ class LoraEstimator(FullParameterTuningEstimator):
             model = AutoModelForCausalLM.from_config(modelc)
 
         logger.info("Initializing LoraEstimator with lora args %s", self.lora_args)
-        self.peft_model = get_peft_model(model, LoraConfig(self.lora_args))
+        self.peft_model = get_peft_model(
+            model,
+            LoraConfig(
+                r=self.lora_args.r,
+                lora_alpha=self.lora_args.lora_alpha,
+                lora_dropout=self.lora_args.lora_dropout,
+                target_modules=self.lora_args.target_modules,
+            ),
+        )
 
         self.num_of_trainable_params = self.peft_model.num_parameters(
             only_trainable=True
