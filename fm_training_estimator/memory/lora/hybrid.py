@@ -7,6 +7,8 @@ from ...data import format_query
 from ...regressor import LookupRegressor, XGBoostRegressor
 from .lora import LoraEstimator
 
+logger = logging.getLogger("HBR_LoRA_EST")
+
 
 class HybridLoraEstimator:
     def __init__(
@@ -19,7 +21,7 @@ class HybridLoraEstimator:
         model_path,
     ):
 
-        logging.info("HybridLora Estimator: Initializing")
+        logger.info("HybridLora Estimator: Initializing")
 
         self.fm = fm_args
         self.ta = train_args
@@ -55,13 +57,13 @@ class HybridLoraEstimator:
         while trials > 0:
             mem = self.get_total_mem_estimate()
             if mem < self.ia.gpu_memory_in_gb * 1024**3:
-                logging.info("Discovered num gpus: {0}".format(self.num_gpus))
+                logger.info("Discovered num gpus: {0}".format(self.num_gpus))
                 return
 
             trials -= 1
             self.num_gpus += 1
 
-        logging.warning("No suitable num gpus found!")
+        logger.warning("No suitable num gpus found!")
 
     def calculate_model_memory(self):
         return self.lora_est.calculate_model_memory() / self.num_gpus
@@ -87,18 +89,19 @@ class HybridLoraEstimator:
         }
 
         if self.lookup_est is not None:
+            logger.info("Attempting lookup")
             lookup_query = format_query(
                 lookup_query_base, self.lookup_est.get_data_format()
             )
-            logging.debug("HybridLora: lookup_query is: %s", lookup_query)
+            logger.debug("Lookup query is: %s", lookup_query)
             res = self.lookup_est.run(lookup_query)
             if res.empty:
                 lookup_mem = None
-                logging.debug("Lookup: no match found by lookup")
+                logger.debug("No match was found by lookup, trying reg_est")
             else:
                 lookup_mem = res["memory"][0:1].item()
             if lookup_mem is not None:
-                logging.info("Lookup: match found")
+                logger.info("Lookup: match found")
                 return lookup_mem
 
         if self.reg_est is not None:
@@ -113,4 +116,4 @@ class HybridLoraEstimator:
 
         # No fall back here
         # If we reach here, we don't have a memory estimate
-        logging.warning("Could not estimate memory by Hybrid Lora Estimator")
+        logger.warning("Could not estimate memory by Hybrid Lora Estimator")
