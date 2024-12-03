@@ -117,3 +117,4 @@ class HybridLoraEstimator:
         # No fall back here
         # If we reach here, we don't have a memory estimate
         logger.warning("Could not estimate memory by Hybrid Lora Estimator")
+        return 0
