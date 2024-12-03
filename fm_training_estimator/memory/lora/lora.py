@@ -8,6 +8,10 @@ from ...config import FMArguments, HFTrainingArguments, PeftLoraConfig
 from ...utils import fmt_size, get_size_from_precision
 from ..full import FullParameterTuningEstimator
 
+# Standard
+import logging
+
+logger = logging.getLogger("LoRA_EST")
 
 class LoraEstimator(FullParameterTuningEstimator):
     def __init__(
@@ -26,6 +30,7 @@ class LoraEstimator(FullParameterTuningEstimator):
             modelc = AutoConfig.from_pretrained(self.fm_args.base_model_path)
             model = AutoModelForCausalLM.from_config(modelc)
 
+        logger.info("Initializing LoraEstimator with lora args %s", self.lora_args)
         self.peft_model = get_peft_model(model, LoraConfig(self.lora_args))
 
         self.num_of_trainable_params = self.peft_model.num_parameters(
