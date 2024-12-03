@@ -21,7 +21,7 @@ class HybridLoraEstimator:
         model_path,
     ):
 
-        logger.info("HybridLora Estimator: Initializing")
+        logger.info("Initializing")
 
         self.fm = fm_args
         self.ta = train_args
