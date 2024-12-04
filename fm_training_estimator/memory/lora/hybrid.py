@@ -114,7 +114,12 @@ class HybridLoraEstimator:
 
             return act
 
-        # No fall back here
-        # If we reach here, we don't have a memory estimate
-        logger.warning("Could not estimate memory by Hybrid Lora Estimator")
-        return 0
+        # If we reach here, we are falling back on theory
+        size = (
+            self.calculate_activation_memory()
+            + self.lora_est.calculate_gradient_memory()
+            + self.lora_est.calculate_model_memory()
+            + self.lora_est.calculate_optimizer_memory()
+        )
+
+        return size
