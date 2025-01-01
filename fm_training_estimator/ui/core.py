@@ -4,6 +4,7 @@ from ..memory import HybridEstimator, HybridLoraEstimator, HybridQLoraEstimator
 from ..throughput import HybridSpeedEstimator
 from ..tokens import TokenEstimator0
 from ..utils import fmt_size
+from ..time import get_total_time
 
 
 def run(config, lookup_data_path=None, model_path=None):
@@ -62,6 +63,6 @@ def run(config, lookup_data_path=None, model_path=None):
         # get the update tps for this estimate token width
         res["tps"] = float(speed_est.get_tps(res["tokens_per_sample"]))
 
-        res["time"] = res["total_tokens"] / res["tps"]
+        res["time"] = get_total_time(res["tps"], res["total_tokens"])
 
     return res

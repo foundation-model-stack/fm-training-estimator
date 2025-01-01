@@ -15,6 +15,7 @@ from fm_training_estimator.memory.lora.hybrid import HybridLoraEstimator
 from fm_training_estimator.memory.qlora.hybrid import HybridQLoraEstimator
 from fm_training_estimator.throughput.hybrid.hybrid import HybridSpeedEstimator
 from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
+from fm_training_estimator.time import get_total_time
 
 # Local
 from ..config import is_fsdp
@@ -149,7 +150,8 @@ def _estimate_tokens_and_time(
             # logger.warn("Could not calculate tps, defaulting to 1.")
             tps = 1
 
-        time = total_tokens / tps
+        # calculate full time here
+        time = get_total_time(tps, total_tokens)
     else:
         # logger.warn("Could not get a total tokens to calculate time, setting time to 0.")
         time = 0
