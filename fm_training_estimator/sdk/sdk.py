@@ -151,7 +151,7 @@ def _estimate_tokens_and_time(
             tps = 1
 
         # calculate full time here
-        time = get_total_time(tps, total_tokens)
+        time = get_total_time(conf.hf_training, conf.infra, token_est, tps, total_tokens)
     else:
         # logger.warn("Could not get a total tokens to calculate time, setting time to 0.")
         time = 0
