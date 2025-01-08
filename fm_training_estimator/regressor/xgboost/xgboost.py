@@ -3,7 +3,7 @@ from xgboost import XGBRegressor
 import pandas
 
 # Local
-from ...data import lookup_format_version
+from ...data import lookup_format_version, get_format_by_version
 
 
 class XGBoostRegressor:
@@ -48,7 +48,7 @@ class XGBoostRegressor:
         # save model to file
         self.model.save_model(model_path)
 
-    def run(self, X):
+    def run(self, X, y):
         # convert input data array into form suitable to feed in
 
         # add column names
@@ -59,7 +59,9 @@ class XGBoostRegressor:
             if data[col].dtype == object:
                 data[col] = data[col].astype("category")
 
-        return self.model.predict(data)
+        res = self.model.predict(data)
+        col_idx = get_format_by_version(self.get_data_format()).Y.split(",").index(y)
+        return res[0][col_idx]
 
     def get_data_format(self):
         return self.model.get_booster().attr("data_format_version")

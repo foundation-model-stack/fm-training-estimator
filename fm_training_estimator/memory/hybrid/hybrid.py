@@ -122,10 +122,7 @@ class HybridEstimator:
             lookup_query, self.reg_est.get_data_format(), only_values=True
         )
 
-        res = self.reg_est.run(params)
-
-        # activation memory are 3rd entry in the list
-        act = res[0][2]
+        act = self.reg_est.run(params, "memory_act")
 
         logging.info(
             "Activation, from regression: {}, from theory: {}".format(
