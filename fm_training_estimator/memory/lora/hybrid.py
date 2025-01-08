@@ -111,9 +111,8 @@ class HybridLoraEstimator:
                 lookup_query_base, self.reg_est.get_data_format(), only_values=True
             )
             logger.debug("Memory Lora Hybrid - Lookup query for reg_est is: %s", params)
-            res = self.reg_est.run(params)
-            logger.debug("Memory Lora Hybrid - Lookup query result for reg_est is: %s", res)
-            act = res[0][1]
+            act = self.reg_est.run(params, "memory")
+            logger.debug("Memory Lora Hybrid - Lookup query result for reg_est is: %s", act)
 
             return act
 

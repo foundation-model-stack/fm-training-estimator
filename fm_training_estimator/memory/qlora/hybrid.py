@@ -113,9 +113,7 @@ class HybridQLoraEstimator:
             params = format_query(
                 lookup_query_base, self.reg_est.get_data_format(), only_values=True
             )
-            res = self.reg_est.run(params)
-
-            act = res[0][1]
+            act = self.reg_est.run(params, "memory")
 
             return act
 

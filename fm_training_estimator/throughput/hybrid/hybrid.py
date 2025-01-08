@@ -79,7 +79,5 @@ class HybridSpeedEstimator:
             lookup_query, self.reg_est.get_data_format(), only_values=True
         )
 
-        res = self.reg_est.run(params)
-
-        # tps is 1st entry in the list
-        return res[0][0]
+        res = self.reg_est.run(params, "tokens_per_second")
+        return res
