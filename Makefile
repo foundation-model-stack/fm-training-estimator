@@ -44,6 +44,10 @@ run-web-ui:
 run-cli:
 	python -m fm_training_estimator.ui.cli --lookup_data_path ./workdir/data.csv -m ./workdir/model.zip $(CONF)
 
+.PHONY: run-cli-arise
+run-cli-arise:
+	python -m fm_training_estimator.ui.cli --lookup_data_path ./workdir/data.csv -m ./workdir/model.zip $(CONF)
+
 .PHONY: run-api
 run-api:
 	python -m fm_training_estimator.ui.api ./workdir/data.csv ./workdir/model.json
