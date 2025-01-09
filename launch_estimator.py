@@ -71,19 +71,31 @@ def main():
     ##########
     model_path = os.getenv("ESTIMATOR_MODEL_PATH")
     estimator_input = EstimateInput.from_dict(input_dict)
-    print("\n" * 3) 
-    print("Estimating Memory:....\n")
 
-    print("With only theory: ", estimate_memory(estimator_input))
+    out_path = os.getenv("ESTIMATOR_OUTPUT_PATH", "estimator_output")
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+
+    out_content = "Input parsed for this estimate: " + str(estimator_input) + "\n\n"
+
+    out_content += "Estimating Memory:....\n"
+
+    out_content += "With only theory: " + str(estimate_memory(estimator_input)) + "\n"
     if model_path:
-        print("With reg model: ", estimate_memory(estimator_input, model_path))
+        out_content += "With reg model: " + str(estimate_memory(estimator_input, model_path)) + "\n"
 
-    print("\n" * 3)
-    print("Estimating Time:....\n")
+    out_content += "\n" * 3
+    out_content += "Estimating Time:....\n"
 
-    print("With only theory: ", estimate_time(estimator_input))
+    out_content += "With only theory: " + str(estimate_time(estimator_input)) + "\n"
     if model_path:
-        print("With reg model: ", estimate_time(estimator_input, model_path))
+        out_content += "With reg model: " + str(estimate_time(estimator_input, model_path)) + "\n"
+
+    print(out_content)
+
+    f = open(os.path.join(out_path, "output.txt"), "w")
+    f.write(out_content)
+    f.close()
     return 0
 
 def get_input_dict():
