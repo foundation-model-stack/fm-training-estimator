@@ -7,7 +7,7 @@ setuptools
 fire
 pandas
 xgboost
-scikit-learn
+scikit-learn<1.6
 gradio
 datasets
 uvicorn
