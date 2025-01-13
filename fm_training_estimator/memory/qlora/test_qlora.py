@@ -3,8 +3,7 @@
 # Local
 from ...config import parse
 from ...utils import fmt_size
-from .lora import QLoraEstimator
-
+from .qlora import QLoraEstimator
 
 def test_qlora():
     fm, ta, _, _, la, qla = parse(

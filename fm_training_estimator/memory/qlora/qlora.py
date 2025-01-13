@@ -28,7 +28,8 @@ class QLoraEstimator(FullParameterTuningEstimator):
             modelc = AutoConfig.from_pretrained(self.fm_args.base_model_path)
             model = AutoModelForCausalLM.from_config(modelc)
 
-        self.peft_model = get_peft_model(model, LoraConfig(self.lora_args))
+        # cast our lora config dataclass instance into the real peft dataclass fmt
+        self.peft_model = get_peft_model(model, LoraConfig(**self.lora_args.__dict__))
 
         self.num_of_trainable_params = self.peft_model.num_parameters(
             only_trainable=True
