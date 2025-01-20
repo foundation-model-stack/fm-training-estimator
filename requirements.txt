@@ -11,3 +11,4 @@ scikit-learn<1.6
 gradio
 datasets
 uvicorn
+dataclass_wizard
