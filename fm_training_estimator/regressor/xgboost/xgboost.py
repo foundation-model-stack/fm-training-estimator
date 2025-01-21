@@ -33,7 +33,6 @@ class XGBoostRegressor:
             if data[col].dtype == object:
                 data[col] = data[col].astype("category")
                 
-        data = data.drop(columns=["method","gpu_model"])
         X = data.drop(columns=y_headers)
         Y = data[y_headers]
 
@@ -52,8 +51,6 @@ class XGBoostRegressor:
     def run(self, X):
         # convert input data array into form suitable to feed in
 
-        print("X shape:", X)
-        print("Expected columns:", self.model.get_booster().feature_names)
         # add column names
         data = pandas.DataFrame([X], columns=self.model.get_booster().feature_names)
 
