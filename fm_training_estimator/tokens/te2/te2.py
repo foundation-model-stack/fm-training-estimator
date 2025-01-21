@@ -96,22 +96,19 @@ class TokenEstimator2(TokenEstimator):
         return self.contract["len"]
 
 
-
-
-def ExtractTokenEstimator2Contract(da: DataArguments):
-    if da.dataset is None:
-        raise RuntimeError("Dataset argument has to be filled in for TE2!")
-
-    if da.dataset.endswith(".json") or da.dataset.endswith(".jsonl"):
+# TODO: generate for all configs and splits
+def GenerateTokenEstimator2Contract(dataset, config_name, split):
+    if dataset.endswith(".json") or dataset.endswith(".jsonl"):
         logger.info("Parsing dataset as local json file")
-        dataset = load_dataset("json", data_files={"train": da.dataset})["train"]
+        dataset = load_dataset("json", data_files={"train": dataset})["train"]
     else:
-        dataset = load_dataset(
-            da.dataset, name=da.dataset_config_name, split=da.dataset_split
-        )
+        dataset = load_dataset(dataset, name=config_name, split=split)
 
     tokens = []
     print("Loading data in dataset...")
+    # TODO: run for all text fields here
+    # TODO: run sampling instead of going through it all
+
     for item in tqdm(dataset):
         tokens.append(int(len(item[da.dataset_text_field]) / 3.6))
 
