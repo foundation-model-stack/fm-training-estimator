@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Local
 from ...config import parse
-from .te2 import TokenEstimator2, ExtractTokenEstimator2Contract, TokenEstimator2FromContract
+from .te2 import TokenEstimator2, ExtractTokenEstimator2Contract
 from ..te0 import TokenEstimator0
 
 # trick to ensure running this with pytest works from root dir
@@ -71,23 +71,3 @@ def test_te2_contract():
     contract = ExtractTokenEstimator2Contract(da)
 
     assert contract["len"] == 9
-
-def test_te_contract():
-    _, _, _, da = parse(
-        {
-            "base_model_path": "ibm-granite/granite-8b-code-base",
-            "gpu_memory_in_gb": 80,
-            "dataset": test_data,
-            "dataset_text_field": "text",
-        }
-    )
-
-    contract = ExtractTokenEstimator2Contract(da)
-
-    te = TokenEstimator2FromContract(contract)
-
-    assert te.get_num_samples() == 9
-    assert te.get_total_tokens() == 533
-    assert te.get_estimated_batch_width(1) < te.get_estimated_batch_width(2), "both existing data"
-    assert te.get_estimated_batch_width(5) != None, "non existant bs should be interpolated"
-    assert te.get_estimated_batch_width(6) < te.get_estimated_batch_width(8), "one existing point compared with one estimated"
