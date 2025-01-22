@@ -104,29 +104,40 @@ def GenerateTokenEstimator2Contract(dataset, config_name, split):
     else:
         dataset = load_dataset(dataset, name=config_name, split=split)
 
-    tokens = []
     print("Loading data in dataset...")
-    # TODO: run for all text fields here
+
+    feat_tokens = {}
     # TODO: run sampling instead of going through it all
 
+    # mark all string features to generate contracts for
+    for feat, f_val in dataset.features.items():
+        if f_val.dtype == 'string':
+            feat_tokens[feat] = []
+
     for item in tqdm(dataset):
-        tokens.append(int(len(item[da.dataset_text_field]) / 3.6))
+        # loop over needed features
+        for feat in feat_tokens.keys():
+            feat_tokens[feat].append(int(len(item[feat]) / 3.6))
 
-    tokens = np.sort(tokens)[::-1]
+    contracts = {}
+    for feat in feat_tokens.keys():
+        tokens = np.sort(feat_tokens[feat])[::-1]
 
-    contract = {}
-    contract["len"] = len(tokens)
-    contract["total"] = int(np.sum(tokens))
-    contract["min"] = int(np.min(tokens))
-    contract["max"] = int(np.max(tokens))
-    contract["mean"] = round(np.mean(tokens), 2)
-    contract["std"] = round(np.std(tokens), 2)
+        contract = {}
+        contract["len"] = len(tokens)
+        contract["total"] = int(np.sum(tokens))
+        contract["min"] = int(np.min(tokens))
+        contract["max"] = int(np.max(tokens))
+        contract["mean"] = round(np.mean(tokens), 2)
+        contract["std"] = round(np.std(tokens), 2)
 
-    contract["bs1"] = contract["mean"]
+        contract["bs1"] = contract["mean"]
 
-    # for bs = 2, 4, 6, 8, 16
-    batch_sizes = [2**i for i in range(1, 5) if 2**i <= contract["len"]]
-    for bs in batch_sizes:
-        contract[f"bs{bs}"] = np.mean(tokens[:int(len(tokens)/bs)])
+        # for bs = 2, 4, 6, 8, 16
+        batch_sizes = [2**i for i in range(1, 5) if 2**i <= contract["len"]]
+        for bs in batch_sizes:
+            contract[f"bs{bs}"] = np.mean(tokens[:int(len(tokens)/bs)])
 
-    return contract
+        contracts[feat] = contract
+
+    return contracts
