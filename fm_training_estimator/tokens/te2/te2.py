@@ -29,35 +29,6 @@ def load_dataset_config_from_json(json_file_path):
         return None
 
 
-def parse_dataset_config(config):
-    try:
-        """Parse the JSON string into a Dataset dataclass."""
-        contract = {}
-        contract["len"] = config["number_of_tokens"]
-
-        for field_data in config["fields"]:
-            contract["min"] = contract.get("min", 0) + field_data["minimum_token_length"]
-            contract["max"] = contract.get("max", 0) + field_data["maximum_token_length"]
-            contract["std"] = contract.get("std", 0) + field_data["standard_deviation"] # Considering covariances between the fields to be 0
-            contract["mean"] = contract.get("mean", 0) + field_data["mean_token_length"]
-            contract["bs2"] = contract.get("bs2", 0) + field_data["50%ile_token_length"]
-            contract["bs4"] = contract.get("bs4", 0) + field_data["75%ile_token_length"]
-            contract["bs6"] = contract.get("bs6", 0) + field_data["83.33%ile_token_length"]
-            contract["bs8"] = contract.get("bs8", 0) + field_data["87.5%ile_token_length"]
-            contract["bs16"] = contract.get("bs16", 0) + field_data["93.75%ile_token_length"]
-        contract["bs1"] = contract["mean"]
-        contract["total"] = contract["mean"]*contract["len"]
-        return contract
-
-    except Exception as e:  # pylint: disable=broad-except
-        logger.error(
-            "failed to parse the dataset arguments from config {config}. error : \
-                {e}".format(
-                config=config, e=e
-            )
-        )
-    
-
 class TokenEstimator2(TokenEstimator):
     def __init__(self, da: DataArguments):
         if da.dataset_config_file is None:
@@ -65,10 +36,12 @@ class TokenEstimator2(TokenEstimator):
 
         if da.dataset_config_file.endswith(".json"):
             logger.info("Parsing dataset configuration as local json file")
-            dataset_config = load_dataset_config_from_json(da.dataset_config_file)
-            contract = parse_dataset_config(dataset_config)
+            contracts = load_dataset_config_from_json(da.dataset_config_file)
         else:
             raise RuntimeError("Please upload dataset configuration in correct JSON format!")
+
+        # TODO: deal with formatted strings here
+        contract = contracts[da.dataset_text_field]
         
         m = {}
         m[1] = contract["bs1"]
@@ -97,7 +70,7 @@ class TokenEstimator2(TokenEstimator):
 
 
 # TODO: generate for all configs and splits
-def GenerateTokenEstimator2Contract(dataset, config_name, split):
+def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None):
     if dataset.endswith(".json") or dataset.endswith(".jsonl"):
         logger.info("Parsing dataset as local json file")
         dataset = load_dataset("json", data_files={"train": dataset})["train"]

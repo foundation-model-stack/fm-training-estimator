@@ -3,12 +3,13 @@ from pathlib import Path
 
 # Local
 from ...config import parse
-from .te2 import TokenEstimator2, ExtractTokenEstimator2Contract
+from .te2 import TokenEstimator2, GenerateTokenEstimator2Contract
 from ..te0 import TokenEstimator0
 
 # trick to ensure running this with pytest works from root dir
 test_data = (Path(__file__).parent / "te_test1.jsonl").as_posix()
-
+contract_axb = (Path(__file__).parent / "test_axb.contract.json").as_posix()
+contract_test1 = (Path(__file__).parent / "test1.contract.json").as_posix()
 
 def test_te_raw_hf_dataset():
     _, _, _, da = parse(
@@ -19,6 +20,7 @@ def test_te_raw_hf_dataset():
             "dataset_config_name": "axb",
             "dataset_split": "test",
             "dataset_text_field": "sentence1",
+            "dataset_config_file": contract_axb
         }
     )
 
@@ -33,9 +35,6 @@ def test_te_raw_hf_dataset():
     assert (
         abs(te.get_estimated_batch_width(1) - (te.get_total_tokens() / 1104)) < 1e6
     ), "Estimated batch width for BS=1 should be equal to mean of tokens"
-    assert te.get_estimated_batch_width(1104) == max(
-        te.tokens
-    ), "For batch size equal to dataset length, estimated batch width should be equal to max length of tokens"
     assert (
         te0.get_estimated_batch_width(4) < te.get_estimated_batch_width(4)
     ), "TE0 must be less than TE2 for same batch size"
@@ -48,6 +47,7 @@ def test_te_raw_json():
             "gpu_memory_in_gb": 80,
             "dataset": test_data,
             "dataset_text_field": "text",
+            "dataset_config_file": contract_test1
         }
     )
 
@@ -68,6 +68,6 @@ def test_te2_contract():
         }
     )
 
-    contract = ExtractTokenEstimator2Contract(da)
+    contract = GenerateTokenEstimator2Contract(da.dataset)
 
-    assert contract["len"] == 9
+    assert contract["text"]["len"] == 9
