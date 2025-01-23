@@ -12,7 +12,7 @@ contract_axb = (Path(__file__).parent / "test_axb.contract.json").as_posix()
 contract_test1 = (Path(__file__).parent / "test1.contract.json").as_posix()
 
 def test_te_raw_hf_dataset():
-    _, _, _, da = parse(
+    _, _, _, da, _, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "gpu_memory_in_gb": 80,
@@ -41,7 +41,7 @@ def test_te_raw_hf_dataset():
 
 
 def test_te_raw_json():
-    _, _, _, da = parse(
+    _, _, _, da, _, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "gpu_memory_in_gb": 80,
@@ -59,7 +59,7 @@ def test_te_raw_json():
     assert te0.get_estimated_batch_width(2) < te.get_estimated_batch_width(2)
 
 def test_te2_contract():
-    _, _, _, da = parse(
+    _, _, _, da, _, _ = parse(
         {
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "gpu_memory_in_gb": 80,
