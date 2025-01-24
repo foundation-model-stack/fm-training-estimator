@@ -19,7 +19,7 @@ def test_te_raw_hf_dataset():
             "dataset": "super_glue",
             "dataset_config_name": "axb",
             "dataset_split": "test",
-            "dataset_text_field": "sentence1",
+            "dataset_text_field": "{sentence1}",
             "dataset_config_file": contract_axb
         }
     )
@@ -46,7 +46,7 @@ def test_te_raw_json():
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "gpu_memory_in_gb": 80,
             "dataset": test_data,
-            "dataset_text_field": "text",
+            "dataset_text_field": "{text}",
             "dataset_config_file": contract_test1
         }
     )
@@ -64,7 +64,7 @@ def test_te2_contract():
             "base_model_path": "ibm-granite/granite-8b-code-base",
             "gpu_memory_in_gb": 80,
             "dataset": test_data,
-            "dataset_text_field": "text",
+            "dataset_text_field": "{text}",
         }
     )
 

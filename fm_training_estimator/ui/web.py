@@ -245,7 +245,7 @@ def web(
                             elif value == "2":
                                 return {
                                     dataset: gr.update(visible=False),
-                                    dataset_field: gr.update(visible=False),
+                                    dataset_field: gr.update(visible=True),
                                     dataset_split: gr.update(visible=False),
                                     dataset_config: gr.update(visible=False),  # visible only when value == 1
                                     dataset_config_file: gr.update(visible=True),

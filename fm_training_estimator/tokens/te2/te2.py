@@ -1,4 +1,5 @@
 import json
+import re
 
 # Third Party
 from datasets import load_dataset
@@ -40,33 +41,100 @@ class TokenEstimator2(TokenEstimator):
         else:
             raise RuntimeError("Please upload dataset configuration in correct JSON format!")
 
-        # TODO: deal with formatted strings here
-        contract = contracts[da.dataset_text_field]
+        baseline, fields = self.process_sample_format(da.dataset_text_field)
+
+        self.baseline = baseline
+
+        self.contract = {}
+        self.m = {}
+        self.reg = {}
+
+        # For each field found in the input format, extract info from contract
+        for field in fields:
+            contract = contracts[field]
         
-        m = {}
-        m[1] = contract["bs1"]
-        batch_sizes = [2**i for i in range(1, 5) if 2**i <= contract["len"]]
-        for bs in batch_sizes:
-            m[bs] = contract[f"bs{bs}"]
+            m = {}
+            m[1] = contract["bs1"]
+            batch_sizes = [2**i for i in range(1, 5) if 2**i <= contract["len"]]
+            for bs in batch_sizes:
+                m[bs] = contract[f"bs{bs}"]
 
-        X = np.array([[i] for i in m.keys()])
-        y = np.array(list(m.values()))
+            X = np.array([[i] for i in m.keys()])
+            y = np.array(list(m.values()))
 
-        self.contract = contract
-        self.m = m
-        self.reg = LinearRegression().fit(X, y)
+            self.contract[field] = contract
+            self.m[field] = m
+            self.reg[field] = LinearRegression().fit(X, y)
+
+    def process_sample_format(self, format_str):
+        """
+        Convert an input format string, into the constant baseline part and the fields used from the dataset.
+
+        The baseline part is the number of tokens used in the static string part of the format.
+        The fields are simply a list of matches of words in {}.
+
+        For example, input format string maybe:
+        'Below is a an instruction....
+         ### Instruction
+         {instruction}
+         ### Input:
+         {input}
+         ### Response:'
+
+        In the original data, we have contract information about "instruction" and "input" stored.
+        In this function, we need to extract out how many tokens make the static portion and
+        what fields are left over.
+        """
+        matches = re.findall(r'\{(.*?)\}', format_str)
+
+        total = len(format_str)
+
+        slot_len = 0
+        for m in matches:
+            # add 2 for the curly braces
+            slot_len += 2 + len(matches)
+
+        # number of tokens
+        baseline = (total - slot_len) / 3.6
+
+        return (total - slot_len, matches)
 
     def get_total_tokens(self):
-        return self.contract["total"]
+        """
+        Since each entry is also formatted with the fmt_string, we need to add the static portions.
+        """
+        total = 0
+        num_samples = self.get_num_samples()
+
+        # add all the common static tokens, one full set of baseline for each entey
+        total += self.baseline * num_samples
+        # now add the full set of tokens for fields that are present in here
+        for con in self.contract.values():
+            total += con["total"]
+
+        return total
 
     def get_estimated_batch_width(self, bs):
-        if bs in self.m.keys():
-            return self.m[bs]
+        """
+        Since multiple fields make up a single entry, we predict average size of each and 
+        also add the baseline width to it.
+        """
+        width = self.baseline
 
-        return self.reg.predict([[bs]])[0]
+        for field in self.contract.keys():
+            m = self.m[field]
+            reg = self.reg[field]
+            if bs in m.keys():
+                width += m[bs]
+            else:
+                width += reg.predict([[bs]])[0]
+
+        return width
 
     def get_num_samples(self):
-        return self.contract["len"]
+        # length of all contracts will be same
+        con = list(self.contract.values())[0]
+        return con["len"]
 
 
 # TODO: generate for all configs and splits
