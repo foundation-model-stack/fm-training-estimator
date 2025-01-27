@@ -138,7 +138,7 @@ class TokenEstimator2(TokenEstimator):
 
 
 # TODO: generate for all configs and splits
-def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None):
+def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None, sample_percent=None):
     if dataset.endswith(".json") or dataset.endswith(".jsonl"):
         logger.info("Parsing dataset as local json file")
         dataset = load_dataset("json", data_files={"train": dataset})["train"]
@@ -149,16 +149,25 @@ def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None):
 
     feat_tokens = {}
     # TODO: run sampling instead of going through it all
+    num_items = len(dataset)
+    if sample_percent != None:
+        if sample_percent > 0 and sample_percent <= 100:
+            num_items = int(num_items * sample_percent/100)
 
     # mark all string features to generate contracts for
     for feat, f_val in dataset.features.items():
         if f_val.dtype == 'string':
             feat_tokens[feat] = []
 
+    seen_items = 0
     for item in tqdm(dataset):
         # loop over needed features
         for feat in feat_tokens.keys():
             feat_tokens[feat].append(int(len(item[feat]) / 3.6))
+
+        seen_items += 1
+        if seen_items >= num_items:
+            break
 
     contracts = {}
     for feat in feat_tokens.keys():
@@ -180,5 +189,10 @@ def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None):
             contract[f"bs{bs}"] = np.mean(tokens[:int(len(tokens)/bs)])
 
         contracts[feat] = contract
+
+        # if we are in sampling mode, rescale the stats
+        if num_items != len(dataset):
+            contract["len"] = len(dataset)
+            contract["total"] = int(contract["total"]*len(dataset)/num_items)
 
     return contracts
