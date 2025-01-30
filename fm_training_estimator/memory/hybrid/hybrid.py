@@ -1,10 +1,8 @@
-# Standard
-import logging
-
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
 from ...data import format_query
 from ...regressor import LookupRegressor, GetRegressor
+from ...utils import logger
 from ..fsdp import FSDPEstimator
 from ..full import FullParameterTuningEstimator
 
@@ -19,7 +17,7 @@ class HybridEstimator:
         model_path,
     ):
 
-        logging.info("Hybrid Estimator: Initializing")
+        logger.info("Memory Hybrid: Initializing")
 
         self.fm = fm_args
         self.ta = train_args
@@ -65,7 +63,7 @@ class HybridEstimator:
 
     def auto_discover_num_gpus(self):
         """Discover the number of gpus needed - by guess and emperical validation."""
-        logging.info("Attempting auto discovery of num gpus...")
+        logger.info("Memory Hybrid - Attempting auto discovery of num gpus...")
 
         guess = self.fsdp_est.estimate_number_of_gpus()
         trials = 10
@@ -76,13 +74,15 @@ class HybridEstimator:
 
             # acceptable memory configuration found
             if mem < self.ia.gpu_memory_in_gb * 1024**3:
-                logging.info("..finalized num of gpus to: {}".format(guess))
+                logger.debug(
+                    "Memory Hybrid - finalized num of gpus to: {}".format(guess)
+                )
                 return
 
             guess += 1
             trials -= 1
 
-        logging.warning("No suitable num gpus found!")
+        logger.warning("Memory Hybrid - No suitable num gpus found!")
         self.fsdp_est.set_number_of_gpus(-1)
 
     def lookup_mem(self):
@@ -109,10 +109,10 @@ class HybridEstimator:
             return self.full_est.calculate_activation_memory()
 
         if self.reg_est is None:
-            logging.info("Hybrid: Skipping Regression")
+            logger.debug("Memory Hybrid - Skipping Regression")
             return self.fsdp_est.calculate_activation_memory()
 
-        logging.info("Hybrid: Attempting Regression")
+        logger.debug("Memory Hybrid - Attempting Regression")
 
         lookup_query = {
             "model_name": self.fm.base_model_path,
@@ -132,8 +132,8 @@ class HybridEstimator:
         # activation memory are 3rd entry in the list
         act = res[0][2]
 
-        logging.info(
-            "Activation, from regression: {}, from theory: {}".format(
+        logger.info(
+            "Memory Hybrid - Activation, from regression: {}, from theory: {}".format(
                 act, self.fsdp_est.calculate_activation_memory()
             )
         )
@@ -164,13 +164,13 @@ class HybridEstimator:
 
         # simple lookup
         if self.lookup_est is not None:
-            logging.info("Hybrid: attempting lookup")
+            logger.debug("Memory Hybrid - attempting lookup")
             lookup_mem = self.lookup_mem()
             if lookup_mem is not None:
-                logging.info("Lookup: match found")
+                logger.debug("Memory Hybrid - match found")
                 return lookup_mem
 
-        logging.info("Hybrid: lookup failed")
+        logger.info("Memory Hybrid - lookup failed")
 
         size = (
             self.calculate_activation_memory()

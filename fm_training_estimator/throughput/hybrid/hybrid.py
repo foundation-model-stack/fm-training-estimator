@@ -5,7 +5,7 @@ import logging
 from ...config import FMArguments, HFTrainingArguments, InfraArguments
 from ...data import format_query
 from ...regressor import LookupRegressor, GetRegressor
-from ...utils import extract_model_features
+from ...utils import logger
 
 
 class HybridSpeedEstimator:
@@ -33,9 +33,6 @@ class HybridSpeedEstimator:
             self.reg_est = GetRegressor(model_path)
 
         if lookup_data_path is None and model_path is None:
-            logging.error(
-                "This Estimator cannot function without any regressor module. Please init at least one of 2 regression modules to continue."
-            )
             raise RuntimeError("HybridSpeedEstimator not properly initialized")
 
     def check_lookup(self, seqlen):
@@ -55,7 +52,7 @@ class HybridSpeedEstimator:
         if res.empty:
             return None
 
-        logging.info(res)
+        logger.debug(f"Throughput Hybrid - Lookup result: {res}")
         return res[0:1]["tokens_per_second"].item()
 
     def get_tps(self, seqlen=None):

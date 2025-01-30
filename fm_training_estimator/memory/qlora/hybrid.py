@@ -2,9 +2,16 @@
 import logging
 
 # Local
-from ...config import FMArguments, HFTrainingArguments, InfraArguments, PeftLoraConfig, PeftQLoraConfig
+from ...config import (
+    FMArguments,
+    HFTrainingArguments,
+    InfraArguments,
+    PeftLoraConfig,
+    PeftQLoraConfig,
+)
 from ...data import format_query
 from ...regressor import LookupRegressor, GetRegressor
+from ...utils import logger
 from .qlora import QLoraEstimator
 
 
@@ -20,7 +27,7 @@ class HybridQLoraEstimator:
         model_path,
     ):
 
-        logging.info("HybridQLora Estimator: Initializing")
+        logger.info("Memory QLoRA Hybrid - Initializing")
 
         self.fm = fm_args
         self.ta = train_args
@@ -56,13 +63,17 @@ class HybridQLoraEstimator:
         while trials > 0:
             mem = self.get_total_mem_estimate()
             if mem < self.ia.gpu_memory_in_gb * 1024**3:
-                logging.info("Discovered num gpus: {0}".format(self.num_gpus))
+                logger.debug(
+                    "Memory QLoRA Hybrid - Discovered num gpus: {0}".format(
+                        self.num_gpus
+                    )
+                )
                 return
 
             trials -= 1
             self.num_gpus += 1
 
-        logging.warning("No suitable num gpus found!")
+        logger.warning("Memory QLoRA Hybrid - No suitable num gpus found!")
 
     def calculate_model_memory(self):
         return self.qlora_est.calculate_model_memory() / self.num_gpus
@@ -88,7 +99,7 @@ class HybridQLoraEstimator:
         }
 
         if self.lookup_est is not None:
-            logging.info("HybridQLora: attempting lookup")
+            logger.debug("Memory QLoRA Hybrid - attempting lookup")
             lookup_query = format_query(
                 lookup_query_base, self.lookup_est.get_data_format()
             )
@@ -98,7 +109,7 @@ class HybridQLoraEstimator:
             else:
                 lookup_mem = res["memory"][0:1].item()
             if lookup_mem is not None:
-                logging.info("Lookup: match found")
+                logger.debug("Memory QLoRA Hybrid - match found")
                 return lookup_mem
 
         if self.reg_est is not None:

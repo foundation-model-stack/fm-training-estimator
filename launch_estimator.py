@@ -18,18 +18,26 @@ for the encoded config string to parse.
 """
 
 # Standard
+from pathlib import Path
 import base64
-import os
+import json
 import logging
+import os
 import pickle
 import subprocess
 import sys
 import traceback
-import json
-from pathlib import Path
 
-# Local
-from fm_training_estimator.config.arguments import DataArguments, EstimateInput, EstimatorMetadata, FMArguments, HFTrainingArguments, InfraArguments, JobConfig
+# First Party
+from fm_training_estimator.config.arguments import (
+    DataArguments,
+    EstimateInput,
+    EstimatorMetadata,
+    FMArguments,
+    HFTrainingArguments,
+    InfraArguments,
+    JobConfig,
+)
 from fm_training_estimator.sdk import (
     estimate_cost,
     estimate_memory,
@@ -38,6 +46,7 @@ from fm_training_estimator.sdk import (
 )
 
 logging.basicConfig(level=logging.INFO)
+
 
 def main():
     ##########
@@ -82,14 +91,20 @@ def main():
 
     out_content += "With only theory: " + str(estimate_memory(estimator_input)) + "\n"
     if model_path:
-        out_content += "With reg model: " + str(estimate_memory(estimator_input, model_path)) + "\n"
+        out_content += (
+            "With reg model: "
+            + str(estimate_memory(estimator_input, model_path))
+            + "\n"
+        )
 
     out_content += "\n" * 3
     out_content += "Estimating Time:....\n"
 
     out_content += "With only theory: " + str(estimate_time(estimator_input)) + "\n"
     if model_path:
-        out_content += "With reg model: " + str(estimate_time(estimator_input, model_path)) + "\n"
+        out_content += (
+            "With reg model: " + str(estimate_time(estimator_input, model_path)) + "\n"
+        )
 
     print(out_content)
 
@@ -97,6 +112,7 @@ def main():
     f.write(out_content)
     f.close()
     return 0
+
 
 def get_input_dict():
     """Parses JSON configuration if provided via environment variables
@@ -121,6 +137,7 @@ def get_input_dict():
 
     return input_dict
 
+
 def txt_to_obj(txt):
     """Given encoded byte string, converts to base64 decoded dict.
 
@@ -136,6 +153,7 @@ def txt_to_obj(txt):
     except UnicodeDecodeError:
         # Otherwise the bytes are a pickled python dictionary
         return pickle.loads(message_bytes)
+
 
 if __name__ == "__main__":
     main()
