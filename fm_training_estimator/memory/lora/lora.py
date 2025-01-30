@@ -1,6 +1,3 @@
-# Standard
-import logging
-
 # Third Party
 from accelerate import init_empty_weights
 from peft import LoraConfig, get_peft_model
@@ -8,10 +5,8 @@ from transformers import AutoConfig, AutoModelForCausalLM
 
 # Local
 from ...config import FMArguments, HFTrainingArguments, PeftLoraConfig
-from ...utils import fmt_size, get_size_from_precision
+from ...utils import fmt_size, get_size_from_precision, logger
 from ..full import FullParameterTuningEstimator
-
-logger = logging.getLogger("LoRA_EST")
 
 
 class LoraEstimator(FullParameterTuningEstimator):

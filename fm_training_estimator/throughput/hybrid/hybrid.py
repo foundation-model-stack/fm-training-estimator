@@ -1,6 +1,3 @@
-# Standard
-import logging
-
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments
 from ...data import format_query
