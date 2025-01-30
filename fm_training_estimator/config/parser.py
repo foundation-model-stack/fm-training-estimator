@@ -19,7 +19,12 @@ from .arguments import (
 def parse(
     config: Union[Dict, str]
 ) -> Tuple[
-    FMArguments, HFTrainingArguments, InfraArguments, DataArguments, PeftLoraConfig, PeftQLoraConfig
+    FMArguments,
+    HFTrainingArguments,
+    InfraArguments,
+    DataArguments,
+    PeftLoraConfig,
+    PeftQLoraConfig,
 ]:
     """parse config and return respective dataclass objects
 
