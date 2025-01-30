@@ -1,6 +1,3 @@
-# Standard
-import logging
-
 # Local
 from ...config import (
     FMArguments,
