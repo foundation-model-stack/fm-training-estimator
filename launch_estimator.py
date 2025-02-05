@@ -29,21 +29,8 @@ import sys
 import traceback
 
 # First Party
-from fm_training_estimator.config.arguments import (
-    DataArguments,
-    EstimateInput,
-    EstimatorMetadata,
-    FMArguments,
-    HFTrainingArguments,
-    InfraArguments,
-    JobConfig,
-)
-from fm_training_estimator.sdk import (
-    estimate_cost,
-    estimate_memory,
-    estimate_time,
-    estimate_tokens,
-)
+from fm_training_estimator.config.arguments import EstimateInput, MemoryEstimate
+from fm_training_estimator.sdk import estimate_memory, estimate_time, estimate_tokens
 
 logging.basicConfig(level=logging.INFO)
 
@@ -87,24 +74,55 @@ def main():
 
     out_content = "Input parsed for this estimate: " + str(estimator_input) + "\n\n"
 
+    ############ Memory ############
     out_content += "Estimating Memory:....\n"
 
-    out_content += "With only theory: " + str(estimate_memory(estimator_input)) + "\n"
-    if model_path:
-        out_content += (
-            "With reg model: "
-            + str(estimate_memory(estimator_input, model_path))
-            + "\n"
-        )
+    memory_output = estimate_memory(estimator_input)
+    f = open(os.path.join(out_path, "memory_theory.json"), "w")
+    f.write(json.dumps(memory_output.__dict__))
+    f.close()
 
+    out_content += "With only theory: " + str(memory_output) + "\n"
+    if model_path:
+        memory_output = estimate_memory(estimator_input, model_path)
+        out_content += "With reg model: " + str(memory_output) + "\n"
+        f = open(os.path.join(out_path, "memory_hybrid.json"), "w")
+        f.write(json.dumps(memory_output.__dict__))
+        f.close()
+
+    ############ Time ############
     out_content += "\n" * 3
     out_content += "Estimating Time:....\n"
 
-    out_content += "With only theory: " + str(estimate_time(estimator_input)) + "\n"
+    time_output = estimate_time(estimator_input)
+    f = open(os.path.join(out_path, "time_theory.json"), "w")
+    f.write(json.dumps(time_output.__dict__))
+    f.close()
+
+    out_content += "With only theory: " + str(time_output) + "\n"
     if model_path:
-        out_content += (
-            "With reg model: " + str(estimate_time(estimator_input, model_path)) + "\n"
-        )
+        time_output = estimate_time(estimator_input, model_path)
+        out_content += "With reg model: " + str(time_output) + "\n"
+        f = open(os.path.join(out_path, "time_hybrid.json"), "w")
+        f.write(json.dumps(time_output.__dict__))
+        f.close()
+
+    ############ Tps ############
+    out_content += "\n" * 3
+    out_content += "Estimating tps:....\n"
+
+    tps_output = estimate_tokens(estimator_input)
+    f = open(os.path.join(out_path, "tps_theory.json"), "w")
+    f.write(json.dumps(tps_output.__dict__))
+    f.close()
+
+    out_content += "With only theory: " + str(tps_output) + "\n"
+    if model_path:
+        tps_output = estimate_tokens(estimator_input, model_path)
+        out_content += "With reg model: " + str(tps_output) + "\n"
+        f = open(os.path.join(out_path, "tps_hybrid.json"), "w")
+        f.write(json.dumps(tps_output.__dict__))
+        f.close()
 
     print(out_content)
 
