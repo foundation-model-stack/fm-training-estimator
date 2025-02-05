@@ -27,7 +27,7 @@ dependencies = [
   "fire",
   "pandas",
   "xgboost",
-  "scikit-learn",
+  "scikit-learn<1.6.0",
   "gradio",
   "datasets",
   "dataclass-wizard",
