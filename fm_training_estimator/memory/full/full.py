@@ -4,7 +4,7 @@ from transformers.training_args import OptimizerNames
 
 # Local
 from ...config import FMArguments, HFTrainingArguments
-from ...utils import fmt_size, get_size_from_precision
+from ...utils import fmt_size, get_size_from_precision, logger
 
 
 class FullParameterTuningEstimator:
@@ -92,8 +92,12 @@ class FullParameterTuningEstimator:
 
         multiplier = 1
         if self.precision == "float32":
+            logger.debug(f"Memory Full - Using multiplier 2 as precision is float32.")
             multiplier = 2
         elif self.precision == "float16" or self.precision == "bfloat16":
+            logger.debug(
+                f"Memory Full - Using multiplier 1 as precision is bfloat16 or float16."
+            )
             multiplier = 1
         # print(s, b, h, l)
         # print(fmt_size(19 * s * b * h * l))
