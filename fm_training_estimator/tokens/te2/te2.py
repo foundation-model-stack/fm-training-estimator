@@ -136,6 +136,14 @@ class TokenEstimator2(TokenEstimator):
         con = list(self.contract.values())[0]
         return con["len"]
 
+    def get_max_sample_length(self):
+        res = self.baseline
+        # this is a very pessimistic view, and not the actual worst case
+        for con in self.contract.values():
+            res += con["max"]
+
+        return res
+
 
 # TODO: generate for all configs and splits
 def GenerateTokenEstimator2Contract(dataset, config_name=None, split=None, sample_percent=None):

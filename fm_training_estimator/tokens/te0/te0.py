@@ -62,3 +62,6 @@ class TokenEstimator0(TokenEstimator):
                 [tokens, np.zeros(bs - len(tokens) % bs)]
             )  # simulating drop_last=False
         return np.mean(np.max(np.split(tokens, len(tokens) / bs), axis=1))
+
+    def get_max_sample_length(self):
+        return np.max(self.tokens)

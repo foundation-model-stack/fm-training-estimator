@@ -51,6 +51,28 @@ def _get_hybrid_estimator(
             conf.fm, conf.hf_training, conf.infra, lookup_data_path, model_path
         )
 
+def _update_seq_width(
+    conf: JobConfig
+) -> JobConfig:
+    """
+    Update the seq width based on the input dataset characteristics.
+
+    This is only needed for memory and should not impact tps/tokens since those
+    functions anyway operate on the input dataset.
+    """
+
+    token_est = None
+    if conf.data.te_approach == 0:
+        token_est = TokenEstimator0(conf.data)
+    if conf.data.te_approach == 2:
+        token_est = TokenEstimator2(conf.data)
+
+    if token_est != None:
+        data_max_width = token_est.get_max_sample_length()
+        if data_max_width < conf.fm.block_size:
+            conf.fm.block_size = data_max_width
+
+    return conf
 
 def estimate_memory(
     estimate_input: EstimateInput, model_path: str = None
@@ -72,6 +94,9 @@ def estimate_memory(
 
     # Only going to process first job_config for now
     job_config = estimate_input.job_configs[0]
+
+    # Update expected max width based on data
+    job_config = _update_seq_width(job_config)
 
     if estimate_input.estimator_metadata:
         lookup_data_path = estimate_input.estimator_metadata.base_data_path
@@ -122,6 +147,8 @@ def _estimate_tokens_and_time(
     token_est = None
     if conf.data.te_approach == 0:
         token_est = TokenEstimator0(conf.data)
+    if conf.data.te_approach == 2:
+        token_est = TokenEstimator2(conf.data)
 
     speed_est = HybridSpeedEstimator(
         conf.fm, conf.hf_training, conf.infra, lookup_data_path, model_path

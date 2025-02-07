@@ -12,6 +12,17 @@ def run(config, lookup_data_path=None, model_path=None):
     res = {}
     fm, ta, ia, da, la, qla = parse(config)
 
+    token_est = None
+    if da.te_approach == 0:
+        token_est = TokenEstimator0(da)
+    elif da.te_approach == 2:
+        token_est = TokenEstimator2(da)
+
+    if token_est != None:
+        data_max_width = token_est.get_max_sample_length()
+        if data_max_width < fm.block_size:
+            fm.block_size = data_max_width
+
     if fm.technique == "lora":
         est = HybridLoraEstimator(fm, ta, ia, la, lookup_data_path, model_path)
     elif fm.technique == "qlora":
@@ -46,12 +57,6 @@ def run(config, lookup_data_path=None, model_path=None):
     # No suitable configuration found
     if res["num_gpus"] == -1:
         return {"error": "Input configuration is infeasible!"}
-
-    token_est = None
-    if da.te_approach == 0:
-        token_est = TokenEstimator0(da)
-    elif da.te_approach == 2:
-        token_est = TokenEstimator2(da)
 
     speed_est = HybridSpeedEstimator(fm, ta, ia, lookup_data_path, model_path)
     res["tps"] = float(speed_est.get_tps())
