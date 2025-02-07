@@ -65,6 +65,8 @@ def run(config, lookup_data_path=None, model_path=None):
         # get the update tps for this estimate token width
         res["tps"] = float(speed_est.get_tps(res["tokens_per_sample"]))
 
-        res["time"] = get_total_time(ta, ia, token_est, res["tps"], res["total_tokens"])
+        time_total, time_train = get_total_time(ta, ia, token_est, res["tps"], res["total_tokens"])
+        res["time"] = time_total
+        res["time_train"] = time_train
 
     return res

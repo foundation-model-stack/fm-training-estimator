@@ -154,7 +154,7 @@ def _estimate_tokens_and_time(
         time = get_total_time(conf.hf_training, conf.infra, token_est, tps, total_tokens)
     else:
         # logger.warn("Could not get a total tokens to calculate time, setting time to 0.")
-        time = 0
+        time = (0, 0)
     return (tps, time)
 
 
@@ -185,11 +185,11 @@ def estimate_time(
             "No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
         )
 
-    _, time = _estimate_tokens_and_time(
+    _, (time, train_time) = _estimate_tokens_and_time(
         job_config, model_path, estimate_input.estimator_metadata.base_data_path
     )
 
-    return TimeEstimate(time)
+    return TimeEstimate(time, train_time)
 
 
 def estimate_tokens(

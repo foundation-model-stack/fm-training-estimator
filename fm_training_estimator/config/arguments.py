@@ -230,6 +230,7 @@ class TimeEstimate:
     """The estimated time response to estimate_time function."""
 
     time: str
+    train_time: str
 
 
 @dataclass

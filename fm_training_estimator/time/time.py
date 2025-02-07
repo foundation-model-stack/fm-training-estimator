@@ -12,7 +12,11 @@ CHECKPOINT_TIME = 60
 def get_total_time(
     hf: HFTrainingArguments, ia: InfraArguments, te: TokenEstimator, tps, tokens
 ):
-    train_time = tokens / tps
+    """
+    Returns a tuple of (time_total, time_train).
+    The first is the second plus the time taken for model loading/checkpoint saving etc.
+    """
+    train_time_per_epoch = tokens / tps
 
     num_epochs = hf.num_train_epochs
 
@@ -31,4 +35,6 @@ def get_total_time(
             "Unable to guess number of checkpoints due to use of `best` saving strategy."
         )
 
-    return MODEL_LOAD_TIME + train_time * num_epochs + num_checkpoints * CHECKPOINT_TIME
+    time_train = train_time_per_epoch * num_epochs
+    time_total = MODEL_LOAD_TIME + time_train + (num_checkpoints * CHECKPOINT_TIME)
+    return (time_total, time_train)
