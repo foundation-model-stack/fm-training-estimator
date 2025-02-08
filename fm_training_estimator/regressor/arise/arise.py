@@ -3,13 +3,15 @@ import tempfile
 import shutil
 import pandas
 import yaml
+import zipfile
+from functools import lru_cache
 
 from arise_predictions.preprocessing import job_parser
-from arise_predictions.utils import constants
+from arise_predictions.utils import constants, utils
 from arise_predictions.auto_model.build_models import auto_build_models, get_estimators_config
 from arise_predictions.perform_predict.predict import demo_predict, get_predict_config_from_dict
 
-from ...data import get_format_by_version
+from ...data import lookup_format_version, get_format_by_version
 
 class AriseRegressor:
     def __init__(self, model_path=None):
@@ -61,6 +63,10 @@ class AriseRegressor:
 
             # we only need the headers, so we read just a single row
             data = pandas.read_csv(data_path, nrows=1)
+            # these 2 lines are for calc data version needed by manager module
+            data_keys = ",".join(list(data.columns.values))
+            data_version = lookup_format_version(data_keys)
+            # this is used for arise
             x_headers = list(set(data.columns.values) - set(y_headers))
 
             # prepare the job spec file
@@ -69,13 +75,22 @@ class AriseRegressor:
                 job_spec["job-metadata-inputs"][h] = 0
 
             js = job_parser.parse_job_spec(job_spec)
+
+            # pre-emptively create output dir for arise
+            output_path = os.path.join(workdir, constants.AM_OUTPUT_PATH_SUFFIX)
+            utils.mkdirs(output_path)
+            # normally, arise saves job spec into the model file
+            # but, we skip it here
+            # save the data version into a file in arise model
+            with open(os.path.join(output_path, "estimator_data_version"), "w") as f:
+                f.write(data_version)
+
             self.execute_build(workdir, js, config_path)
 
             # copy the model to required destination
             shutil.copy2(os.path.join(workdir, "ARISE-auto-models.zip"), model_path)
 
     def get_columns(self):
-        # TODO: return data from the job spec file loaded from the model zip itself 
         col_str = get_format_by_version(self.get_data_format()).X
         return col_str.split(",")
 
@@ -118,7 +133,10 @@ class AriseRegressor:
 
             return res[y][0]
 
+    @lru_cache
     def get_data_format(self):
-        return "v3"
-        # TODO: get it from the model file
-        # return self.model.get_booster().attr("data_format_version")
+        with zipfile.ZipFile(self.model_path) as model_zip:
+            with model_zip.open("estimator_data_version", 'r') as edv:
+                dv = edv.read().decode()
+
+        return dv
