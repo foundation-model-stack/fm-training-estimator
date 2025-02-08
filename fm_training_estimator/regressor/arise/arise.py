@@ -4,11 +4,10 @@ import shutil
 import pandas
 import yaml
 
-# from arise_predictions.sdk import execute_auto_build_models, get_base_args, execute_predict
-
 from arise_predictions.preprocessing import job_parser
 from arise_predictions.utils import constants
 from arise_predictions.auto_model.build_models import auto_build_models, get_estimators_config
+from arise_predictions.perform_predict.predict import demo_predict, get_predict_config_from_dict
 
 from ...data import get_format_by_version
 
@@ -70,7 +69,6 @@ class AriseRegressor:
                 job_spec["job-metadata-inputs"][h] = 0
 
             js = job_parser.parse_job_spec(job_spec)
-
             self.execute_build(workdir, js, config_path)
 
             # copy the model to required destination
@@ -80,6 +78,16 @@ class AriseRegressor:
         # TODO: return data from the job spec file loaded from the model zip itself 
         col_str = get_format_by_version(self.get_data_format()).X
         return col_str.split(",")
+
+    def execute_predict(self, workdir, js, predict_config, model_file_name):
+        return demo_predict(
+            original_data=None,
+            config=get_predict_config_from_dict(predict_config),
+            estimator_path=model_file_name,
+            feature_engineering=js[6],
+            metadata_parser_class_name=js[7],
+            metadata_path=model_file_name,
+            output_path=os.path.join(workdir, constants.PRED_OUTPUT_PATH_SUFFIX))
 
     def run(self, X, y):
         cols = self.get_columns()
@@ -94,26 +102,15 @@ class AriseRegressor:
                               "variable_values": [],
                               "estimators": [est_config]}
 
-            predict_file = os.path.join(workdir, "predict-config.yaml")
-            with open(predict_file, "w") as pfile:
-                yaml.dump(predict_config, pfile)
-
             job_spec = {"job-metadata-inputs": {}, "job-metadata-outputs": [y]}
             for h in cols:
                 job_spec["job-metadata-inputs"][h] = 0
-            job_file = os.path.join(workdir, "job_spec.yaml")
-            with open(job_file, "w") as jobfile:
-                yaml.dump(job_spec, jobfile)
 
             shutil.copy2(self.model_path, workdir)
             model_file_name = os.path.join(workdir, os.path.basename(self.model_path))
  
-            args = get_base_args("predict")
-            args.input_path = workdir
-            args.config_file = predict_file
-            args.model_path = model_file_name
-
-            execute_predict(args)
+            js = job_parser.parse_job_spec(job_spec)
+            self.execute_predict(workdir, js, predict_config, model_file_name)
 
             # now read the result
             res_file = os.path.join(workdir, "ARISE-predictions", "all-predictions.csv")
