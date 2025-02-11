@@ -25,9 +25,14 @@ class HybridEstimator:
         self.ta = train_args
         self.ia = infra_args
 
+        # if fsdp param is not set, set it to default
+        if self.ia.numGpusPerPod != 1:
+            if self.ta.fsdp == []:
+                self.ta.fsdp = ["full_shard"]
+
         self.full_est = FullParameterTuningEstimator(fm_args, train_args)
 
-        if not is_fsdp(train_args):
+        if not is_fsdp(self.ta):
             self.fsdp_enabled = False
             return
 
