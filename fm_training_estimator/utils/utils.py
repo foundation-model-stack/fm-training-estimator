@@ -1,13 +1,25 @@
 # Standard
 from typing import Dict
 import json
+import logging
 import math
+import os
 
 # Third Party
-from transformers.utils import logging
 import yaml
 
-logger = logging.get_logger("fm_training_estimator")
+logger = logging.getLogger("fm_training_estimator")
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+
+# Validate the log level
+numeric_level = getattr(logging, log_level, None)
+if not isinstance(numeric_level, int):
+    raise ValueError(f"Invalid log level: {log_level}")
+
+logging.basicConfig(level=numeric_level)
+logging.info(
+    f"FM Training Estimator utils: Set central logging config to level {log_level}."
+)
 
 
 def unmarshal(path: str) -> Dict:

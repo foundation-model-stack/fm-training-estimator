@@ -32,11 +32,11 @@ class PeftLoraConfig:
     lora_dropout: float = field(default=0.1)
     target_modules: List[str] = field(default_factory=lambda: ["q_proj", "v_proj"])
 
+
 @dataclass
 class PeftQLoraConfig:
-    """Dataclass for QLoRA tuning config
+    """Dataclass for QLoRA tuning config"""
 
-    """
     quant_type: str = field(default="nf4")
     use_double_quant: bool = field(default=False)
 

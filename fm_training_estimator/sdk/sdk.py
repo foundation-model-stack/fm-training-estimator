@@ -1,6 +1,3 @@
-# Standard
-import logging
-
 # First Party
 from fm_training_estimator.config.arguments import (
     CostEstimate,
@@ -14,14 +11,12 @@ from fm_training_estimator.memory.hybrid.hybrid import HybridEstimator
 from fm_training_estimator.memory.lora.hybrid import HybridLoraEstimator
 from fm_training_estimator.memory.qlora.hybrid import HybridQLoraEstimator
 from fm_training_estimator.throughput.hybrid.hybrid import HybridSpeedEstimator
-from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
 from fm_training_estimator.time import get_total_time
+from fm_training_estimator.tokens.te0.te0 import TokenEstimator0
 
 # Local
 from ..config import is_fsdp
-from ..utils import fmt_size
-
-logger = logging.getLogger("EST_SDK")
+from ..utils import fmt_size, logger
 
 
 def _get_hybrid_estimator(
@@ -102,7 +97,7 @@ def estimate_memory(
         lookup_data_path = estimate_input.estimator_metadata.base_data_path
     if lookup_data_path is None:
         logger.warning(
-            "No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
+            "SDK - No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
         )
 
     est = _get_hybrid_estimator(job_config, model_path, lookup_data_path)
@@ -157,8 +152,9 @@ def _estimate_tokens_and_time(
     estimated_tps = speed_est.get_tps()
     if estimated_tps is not None:
         tps = float(estimated_tps)
+        logger.info("SDK - Initial estimated tps is %f", tps)
     else:
-        # logger.warn("Could not calculate tps, defaulting to 1.")
+        logger.info("SDK - Could not calculate tps initially, defaulting to 1.")
         tps = 1
 
     if token_est is not None:
@@ -173,15 +169,22 @@ def _estimate_tokens_and_time(
         estimated_tps = speed_est.get_tps(tokens_per_sample)
         if estimated_tps is not None:
             tps = float(estimated_tps)
+            logger.info("SDK - Updated estimated tps after token width is %f", tps)
         else:
-            # logger.warn("Could not calculate tps, defaulting to 1.")
+            logger.info(
+                "SDK - Could not calculate tps after token width, defaulting to 1."
+            )
             tps = 1
 
         # calculate full time here
-        time = get_total_time(conf.hf_training, conf.infra, token_est, tps, total_tokens)
+        time = get_total_time(
+            conf.hf_training, conf.infra, token_est, tps, total_tokens
+        )
     else:
-        # logger.warn("Could not get a total tokens to calculate time, setting time to 0.")
         time = (0, 0)
+        logger.info(
+            "SDK - Could not get a total tokens to calculate time, setting time to 0."
+        )
     return (tps, time)
 
 
@@ -209,7 +212,7 @@ def estimate_time(
         lookup_data_path = estimate_input.estimator_metadata.base_data_path
     if lookup_data_path is None:
         logger.warning(
-            "No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
+            "SDK - No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
         )
 
     _, (time, train_time) = _estimate_tokens_and_time(
@@ -243,7 +246,7 @@ def estimate_tokens(
         lookup_data_path = estimate_input.estimator_metadata.base_data_path
     if lookup_data_path is None:
         logger.warning(
-            "No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
+            "SDK - No lookup data path given. Set it via estimator_metadata.base_data_path in input json. Proceeding with estimator with limited lookup ability."
         )
 
     tps, _ = _estimate_tokens_and_time(
