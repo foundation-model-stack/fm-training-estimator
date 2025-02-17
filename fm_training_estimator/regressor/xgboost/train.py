@@ -10,14 +10,14 @@ def train(data_path: str, model_path: str, y_headers: list[str]):
 
     Args:
         data_path (str): the path to training data
-        model_path (str): the output path of trained model. Must end with .json.
+        model_path (str): the output path of trained model. Must end with .zip.
         y_headers (list[str]): list of column names to drop from data
 
     """
     model = XGBoostRegressor()
 
-    if not model_path.endswith(".json"):
-        print("model_path must be a json extension.")
+    if not model_path.endswith(".zip"):
+        print("model_path must be a zip extension.")
         print("Refusing to continue!!")
         return
 

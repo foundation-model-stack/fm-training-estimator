@@ -26,7 +26,7 @@ hook:
 
 .PHONY: build-model
 build-model:
-	python -m fm_training_estimator.regressor.xgboost.train ./workdir/data.csv ./workdir/model.json '["tokens_per_second","memory","memory_act"]'
+	python -m fm_training_estimator.regressor.xgboost.train ./workdir/data.csv ./workdir/model.zip '["tokens_per_second","memory","memory_act"]'
 
 .PHONY: run-web-ui
 run-web-ui:
@@ -34,7 +34,7 @@ run-web-ui:
 
 .PHONY: run-cli
 run-cli:
-	python -m fm_training_estimator.ui.cli --lookup_data_path ./workdir/data.csv -m ./workdir/model.json $(CONF)
+	python -m fm_training_estimator.ui.cli --lookup_data_path ./workdir/data.csv -m ./workdir/model.zip $(CONF)
 
 .PHONY: run-api
 run-api:
