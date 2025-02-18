@@ -67,6 +67,7 @@ class XGBoostRegressor:
 
         with ( tempfile.NamedTemporaryFile(suffix='.json', mode='w') as buf_m,
                tempfile.NamedTemporaryFile(suffix='.json', mode='w') as buf_e,
+               tempfile.NamedTemporaryFile(mode='w') as buf_mt,
                zipfile.ZipFile(model_path, mode='w') as model_zip
               ):
 
@@ -74,10 +75,14 @@ class XGBoostRegressor:
             self.model.save_model(buf_m.name)
             # save encoder into tmp buffer
             joblib.dump(self.cat_enc, buf_e.name)
+            # save model type to file
+            with open(buf_mt.name, 'w') as f:
+                f.write("xgboost")
 
             # now move the files into the zip file
             model_zip.write(buf_m.name, 'model.json')
             model_zip.write(buf_e.name, 'cat_enc.json')
+            model_zip.write(buf_mt.name, 'model_type')
 
 
     def run(self, X):
