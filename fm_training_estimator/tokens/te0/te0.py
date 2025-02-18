@@ -1,6 +1,3 @@
-# Standard
-import logging
-
 # Third Party
 from datasets import load_dataset
 from tqdm import tqdm
@@ -23,7 +20,7 @@ class TokenEstimator0(TokenEstimator):
             raise RuntimeError("Dataset argument has to be filled in for TE0!")
 
         if da.dataset.endswith(".json") or da.dataset.endswith(".jsonl"):
-            logger.info("Parsing dataset as local json file")
+            logger.debug("Tokens TE0 - Parsing dataset as local json file")
             dataset = load_dataset("json", data_files={"train": da.dataset})["train"]
         else:
             dataset = load_dataset(
@@ -34,7 +31,7 @@ class TokenEstimator0(TokenEstimator):
             )
 
         tokens = []
-        logging.info("Loading data in dataset...")
+        logger.info("Tokens TE0 - Loading data in dataset...")
         for item in tqdm(dataset):
             txt = da.dataset_text_field.format_map(item)
             tokens.append(int(len(txt) / 3.6))

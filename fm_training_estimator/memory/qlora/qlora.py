@@ -38,16 +38,19 @@ class QLoraEstimator(FullParameterTuningEstimator):
 
         self.precision = self._get_precision()
 
-    
     def calculate_model_memory(self, readable=False):
         # See QLora paper https://arxiv.org/pdf/2305.14314
         # Quantization overhead for each model parameter of 0.5 bits or 0.0625 bytes.
         # If double quantization is enabled this can be further brought down to 0.127 bits or 0.015875
-        
+
         if self.qlora_args.use_double_quant:
-            size = self.num_of_model_params * (get_size_from_precision(self.qlora_args.quant_type) + 0.015875)
+            size = self.num_of_model_params * (
+                get_size_from_precision(self.qlora_args.quant_type) + 0.015875
+            )
         else:
-            size = self.num_of_model_params * (get_size_from_precision(self.qlora_args.quant_type) + 0.0625)
+            size = self.num_of_model_params * (
+                get_size_from_precision(self.qlora_args.quant_type) + 0.0625
+            )
 
         if readable:
             return fmt_size(size)

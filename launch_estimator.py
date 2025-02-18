@@ -18,26 +18,22 @@ for the encoded config string to parse.
 """
 
 # Standard
+from pathlib import Path
 import base64
-import os
+import json
 import logging
+import os
 import pickle
 import subprocess
 import sys
 import traceback
-import json
-from pathlib import Path
 
-# Local
-from fm_training_estimator.config.arguments import DataArguments, EstimateInput, EstimatorMetadata, FMArguments, HFTrainingArguments, InfraArguments, JobConfig
-from fm_training_estimator.sdk import (
-    estimate_cost,
-    estimate_memory,
-    estimate_time,
-    estimate_tokens,
-)
+# First Party
+from fm_training_estimator.config.arguments import EstimateInput, MemoryEstimate
+from fm_training_estimator.sdk import estimate_memory, estimate_time, estimate_tokens
 
 logging.basicConfig(level=logging.INFO)
+
 
 def main():
     ##########
@@ -71,20 +67,70 @@ def main():
     ##########
     model_path = os.getenv("ESTIMATOR_MODEL_PATH")
     estimator_input = EstimateInput.from_dict(input_dict)
-    print("\n" * 3) 
-    print("Estimating Memory:....\n")
 
-    print("With only theory: ", estimate_memory(estimator_input))
+    out_path = os.getenv("ESTIMATOR_OUTPUT_PATH", "estimator_output")
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+
+    out_content = "Input parsed for this estimate: " + str(estimator_input) + "\n\n"
+
+    ############ Memory ############
+    out_content += "Estimating Memory:....\n"
+
+    memory_output = estimate_memory(estimator_input)
+    f = open(os.path.join(out_path, "memory_theory.json"), "w")
+    f.write(json.dumps(memory_output.__dict__))
+    f.close()
+
+    out_content += "With only theory: " + str(memory_output) + "\n"
     if model_path:
-        print("With reg model: ", estimate_memory(estimator_input, model_path))
+        memory_output = estimate_memory(estimator_input, model_path)
+        out_content += "With reg model: " + str(memory_output) + "\n"
+        f = open(os.path.join(out_path, "memory_hybrid.json"), "w")
+        f.write(json.dumps(memory_output.__dict__))
+        f.close()
 
-    print("\n" * 3)
-    print("Estimating Time:....\n")
+    ############ Time ############
+    out_content += "\n" * 3
+    out_content += "Estimating Time:....\n"
 
-    print("With only theory: ", estimate_time(estimator_input))
+    time_output = estimate_time(estimator_input)
+    f = open(os.path.join(out_path, "time_theory.json"), "w")
+    f.write(json.dumps(time_output.__dict__))
+    f.close()
+
+    out_content += "With only theory: " + str(time_output) + "\n"
     if model_path:
-        print("With reg model: ", estimate_time(estimator_input, model_path))
+        time_output = estimate_time(estimator_input, model_path)
+        out_content += "With reg model: " + str(time_output) + "\n"
+        f = open(os.path.join(out_path, "time_hybrid.json"), "w")
+        f.write(json.dumps(time_output.__dict__))
+        f.close()
+
+    ############ Tps ############
+    out_content += "\n" * 3
+    out_content += "Estimating tps:....\n"
+
+    tps_output = estimate_tokens(estimator_input)
+    f = open(os.path.join(out_path, "tps_theory.json"), "w")
+    f.write(json.dumps(tps_output.__dict__))
+    f.close()
+
+    out_content += "With only theory: " + str(tps_output) + "\n"
+    if model_path:
+        tps_output = estimate_tokens(estimator_input, model_path)
+        out_content += "With reg model: " + str(tps_output) + "\n"
+        f = open(os.path.join(out_path, "tps_hybrid.json"), "w")
+        f.write(json.dumps(tps_output.__dict__))
+        f.close()
+
+    print(out_content)
+
+    f = open(os.path.join(out_path, "output.txt"), "w")
+    f.write(out_content)
+    f.close()
     return 0
+
 
 def get_input_dict():
     """Parses JSON configuration if provided via environment variables
@@ -109,6 +155,7 @@ def get_input_dict():
 
     return input_dict
 
+
 def txt_to_obj(txt):
     """Given encoded byte string, converts to base64 decoded dict.
 
@@ -124,6 +171,7 @@ def txt_to_obj(txt):
     except UnicodeDecodeError:
         # Otherwise the bytes are a pickled python dictionary
         return pickle.loads(message_bytes)
+
 
 if __name__ == "__main__":
     main()

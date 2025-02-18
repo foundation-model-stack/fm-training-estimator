@@ -1,13 +1,9 @@
-# Standard
-import logging
-
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, PeftLoraConfig
 from ...data import format_query
 from ...regressor import LookupRegressor, GetRegressor
+from ...utils import logger
 from .lora import LoraEstimator
-
-logger = logging.getLogger("HBR_LoRA_EST")
 
 
 class HybridLoraEstimator:
@@ -21,7 +17,7 @@ class HybridLoraEstimator:
         model_path,
     ):
 
-        logger.info("Initializing")
+        logger.info("Memory Lora Hybrid - Initializing")
 
         self.fm = fm_args
         self.ta = train_args
@@ -57,13 +53,17 @@ class HybridLoraEstimator:
         while trials > 0:
             mem = self.get_total_mem_estimate()
             if mem < self.ia.gpu_memory_in_gb * 1024**3:
-                logger.info("Discovered num gpus: {0}".format(self.num_gpus))
+                logger.info(
+                    "Memory Lora Hybrid - Discovered num gpus: {0}".format(
+                        self.num_gpus
+                    )
+                )
                 return
 
             trials -= 1
             self.num_gpus += 1
 
-        logger.warning("No suitable num gpus found!")
+        logger.warning("Memory Lora Hybrid - No suitable num gpus found!")
 
     def calculate_model_memory(self):
         return self.lora_est.calculate_model_memory() / self.num_gpus
@@ -89,27 +89,30 @@ class HybridLoraEstimator:
         }
 
         if self.lookup_est is not None:
-            logger.info("Attempting lookup")
+            logger.debug("Memory Lora Hybrid - Attempting lookup")
             lookup_query = format_query(
                 lookup_query_base, self.lookup_est.get_data_format()
             )
-            logger.debug("Lookup query is: %s", lookup_query)
+            logger.debug("Memory Lora Hybrid - Lookup query for lookup_est is: %s", lookup_query)
             res = self.lookup_est.run(lookup_query)
             if res.empty:
                 lookup_mem = None
-                logger.debug("No match was found by lookup, trying reg_est")
+                logger.debug(
+                    "Memory Lora Hybrid - No match was found by lookup, trying reg_est"
+                )
             else:
                 lookup_mem = res["memory"][0:1].item()
             if lookup_mem is not None:
-                logger.info("Lookup: match found")
+                logger.info("Memory Lora Hybrid - Lookup: match found")
                 return lookup_mem
 
         if self.reg_est is not None:
             params = format_query(
                 lookup_query_base, self.reg_est.get_data_format(), only_values=True
             )
+            logger.debug("Memory Lora Hybrid - Lookup query for reg_est is: %s", params)
             res = self.reg_est.run(params)
-
+            logger.debug("Memory Lora Hybrid - Lookup query result for reg_est is: %s", res)
             act = res[0][1]
 
             return act
