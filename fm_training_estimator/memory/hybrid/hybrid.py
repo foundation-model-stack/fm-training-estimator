@@ -4,7 +4,7 @@ import logging
 # Local
 from ...config import FMArguments, HFTrainingArguments, InfraArguments, is_fsdp
 from ...data import format_query
-from ...regressor import LookupRegressor, XGBoostRegressor
+from ...regressor import LookupRegressor, GetRegressor
 from ..fsdp import FSDPEstimator
 from ..full import FullParameterTuningEstimator
 
@@ -55,7 +55,7 @@ class HybridEstimator:
 
         # Model based estimator
         if model_path is not None:
-            self.reg_est = XGBoostRegressor(model_path)
+            self.reg_est = GetRegressor(model_path)
         else:
             self.reg_est = None
 

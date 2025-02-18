@@ -28,6 +28,10 @@ hook:
 build-model:
 	python -m fm_training_estimator.regressor.xgboost.train ./workdir/data.csv ./workdir/model.zip '["tokens_per_second","memory","memory_act"]'
 
+.PHONY: build-linear-model
+build-linear-model:
+	python -m fm_training_estimator.regressor.linear.train ./workdir/data.csv ./workdir/model.zip '["tokens_per_second","memory","memory_act"]'
+
 .PHONY: run-web-ui
 run-web-ui:
 	python -m fm_training_estimator.ui.web ./workdir/model_whitelist.txt ./workdir/data.csv ./workdir/model.json --enable_api=True
