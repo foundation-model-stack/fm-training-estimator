@@ -85,6 +85,10 @@ class AriseRegressor:
             with open(os.path.join(output_path, "estimator_data_version"), "w") as f:
                 f.write(data_version)
 
+            # save the model type also here
+            with open(os.path.join(output_path, "model_type"), "w") as f:
+                f.write("arise")
+
             self.execute_build(workdir, js, config_path)
 
             # copy the model to required destination
