@@ -2,6 +2,7 @@ import zipfile
 
 from .xgboost import XGBoostRegressor
 from .linear import LinearRegressor
+from .arise import AriseRegressor
 
 def GetRegressor(model_path):
     with zipfile.ZipFile(model_path, mode='r') as model_zip:
@@ -11,5 +12,7 @@ def GetRegressor(model_path):
             return LinearRegressor(model_path)
         elif mt == "xgboost":
             return XGBoostRegressor(model_path)
+        elif mt == "arise":
+            return AriseRegressor(model_path)
         else:
             raise ValueError("Unknown model type found", mt)

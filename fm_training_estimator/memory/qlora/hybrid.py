@@ -7,7 +7,7 @@ from ...config import (
     PeftQLoraConfig,
 )
 from ...data import format_query
-from ...regressor import LookupRegressor, GetRegressor, AriseRegressor
+from ...regressor import LookupRegressor, GetRegressor
 from ...utils import logger
 from .qlora import QLoraEstimator
 
@@ -40,8 +40,7 @@ class HybridQLoraEstimator:
 
         # Model based estimator
         if model_path is not None:
-            # self.reg_est = GetRegressor(model_path)
-            self.reg_est = AriseRegressor(model_path)
+            self.reg_est = GetRegressor(model_path)
         else:
             self.reg_est = None
 
