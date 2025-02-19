@@ -9,7 +9,7 @@ from sklearn.preprocessing import OneHotEncoder
 import joblib
 
 # Local
-from ...data import lookup_format_version
+from ...data import lookup_format_version, get_format_by_version
 
 
 class LinearRegressor:
@@ -77,7 +77,7 @@ class LinearRegressor:
             model_zip.write(buf_e.name, 'cat_enc.json')
             model_zip.write(buf_mt.name, 'model_type')
 
-    def run(self, X):
+    def run(self, X, y):
         # convert input data array into form suitable to feed in
 
         # add column names
@@ -90,7 +90,9 @@ class LinearRegressor:
         data = data.drop(columns=cat_feats)
         data = pandas.concat([data, ecats], axis=1)
 
-        return self.model.predict(data)
+        res = self.model.predict(data)
+        col_idx = get_format_by_version(self.get_data_format()).Y.split(",").index(y)
+        return res[0][col_idx]
 
     def get_data_format(self):
         return self.model.metadata["data_format_version"]
