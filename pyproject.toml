@@ -31,7 +31,8 @@ dependencies = [
   "gradio",
   "datasets",
   "dataclass-wizard",
-  "uvicorn"
+  "uvicorn",
+  "arise-predictions==1.0.2"
 ]
 
 [project.urls]
