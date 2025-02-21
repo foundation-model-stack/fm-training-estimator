@@ -12,3 +12,4 @@ gradio
 datasets
 uvicorn
 dataclass-wizard
+arise-predictions==1.0.2
