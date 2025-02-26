@@ -31,7 +31,7 @@ Fully theory. Simulation based models available.
 |-----------|------------------------------------------------|--------------------|
 | TE0       | Simulation based - slow but accurate           | :heavy_check_mark: |
 | TE1       | Statistical                                    | Planned            |
-| TE2       | Approximate - fast, light, reasonable accurate | Coming soon        |
+| TE2       | Approximate - fast, light, reasonable accurate | :heavy_check_mark  |
 
 ## Usage
 
@@ -51,23 +51,46 @@ pip install fm_training_estimator
 
 ### Build a regression model for learned prediction method
 
-Now, prepare data in the expected format for lookup and regression. Some example data csv files are [here](https://github.com/foundation-model-stack/fm-training-estimator/tree/main/fm_training_estimator/regressor/test_data). Save your data file into `./workdir/data.csv`.
+Now, prepare data in the expected format for lookup and regression. The format to be used to save this data is given [here](https://github.com/foundation-model-stack/fm-training-estimator/tree/main/fm_training_estimator/data/README.md). Save your data file into `./workdir/data.csv`.
 
 ```
 mkdir workdir
 mv <data file> ./workdir/data.csv
 ```
 
-Now, build a regression model using this data, using the provided make target:
-```
-from fm_training_estimator.regressor.xgboost.train import train 
-train("./workdir/data.csv", "./workdir/model.json", ["tokens_per_second","memory","memory_act"])
-```
-This will create a model called `./workdir/model.json` which you can then use to estimate the resource consumption.
+Now, build a regression model using this data, using one of the the provided make targets.
+
+![Building a model](./imgs/build-model.png)
+
+This will create a model called `./workdir/model.zip` which you can then use to estimate the resource consumption.
 
 You can now run the estimator library, see below.
 
-### Use the library to get estimates
+### Using the Estimator
+
+There are a few ways to use the Estimator now:
+
+1. Using the CLI tool, passing in a config in json format.
+2. Using the Web UI.
+3. Using the SDK directly from Python code.
+
+#### Using the CLI
+
+![Demo of using CLI](./imgs/demo-cli.gif)
+
+### Make estimates via a Web UI
+
+To do this, first prepare a txt file called `model_whitelist.txt` in the `workdir/` with a list of model names, 1 per line. Note that these are the models on which you want to run the estimator to estimate their resource consumption. You can use the provided [example](https://github.com/foundation-model-stack/fm-training-estimator/blob/main/fm_training_estimator/ui/model_whitelist.txt) and place it in your `workdir`. Modify this list as needed.
+
+Now, run the ui:
+```
+make run-web-ui
+```
+This will start the UI on `localhost:3000` port.
+
+(The web ui has other options, not covered in this simple setup. If you want to skip the model whitelisting or change the port, directly run the UI as shown in the README in the `./fm_training_estimator/ui` folder.)
+
+#### Use the library to get estimates
 
 For a full API reference, visit our [readthedocs](link).
 
@@ -133,18 +156,6 @@ print("Estimating Tokens:....")
 print("With only theory: ", estimate_tokens(est_input))
 print("With reg model: ", estimate_tokens(est_input, model_path))
 ```
-
-### Make estimates via a Web UI
-
-To do this, first prepare a txt file called `model_whitelist.txt` in the `workdir/` with a list of model names, 1 per line. Note that these are the models on which you want to run the estimator to estimate their resource consumption. You can use the provided [example](https://github.com/foundation-model-stack/fm-training-estimator/blob/main/fm_training_estimator/ui/model_whitelist.txt) and place it in your `workdir`. Modify this list as needed.
-
-Now, run the ui:
-```
-make run-web-ui
-```
-This will start the UI on `localhost:3000` port.
-
-(The web ui has other options, not covered in this simple setup. If you want to skip the model whitelisting or change the port, directly run the UI as shown in the README in the `./fm_training_estimator/ui` folder.)
 
 ### Build a Docker Container Image
 
