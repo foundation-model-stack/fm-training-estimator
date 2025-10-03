@@ -2,6 +2,7 @@
 from .lookup import LookupRegressor
 from .xgboost import XGBoostRegressor
 from .linear import LinearRegressor
-from .arise import AriseRegressor
+#from .arise import AriseRegressor
+from .min_gpu import MinGpuRecommender
 
 from .dispatch import GetRegressor

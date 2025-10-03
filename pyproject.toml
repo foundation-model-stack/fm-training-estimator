@@ -25,14 +25,14 @@ dependencies = [
   "peft",
   "setuptools",
   "fire",
-  "pandas",
+  "pandas==2.2.0rc0",
   "xgboost",
   "scikit-learn<1.6.0",
   "gradio",
   "datasets",
   "dataclass-wizard",
   "uvicorn",
-  "arise-predictions==1.0.2"
+ # "arise-predictions"
 ]
 
 [project.urls]
