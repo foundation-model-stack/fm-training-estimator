@@ -1,3 +1,3 @@
-from .min_gpu_recommender import MinGpuRecommender
+from .recommender import MinGpuRecommenderCaller
 
-__all__ = ["MinGpuRecommender"]
+__all__ = ["MinGpuRecommenderCaller"]
