@@ -2,6 +2,7 @@ import zipfile
 
 from .xgboost import XGBoostRegressor
 from .linear import LinearRegressor
+from .min_gpu import MinGpuRecommenderCaller
 #from .arise import AriseRegressor
 
 def GetRegressor(model_path):
@@ -12,6 +13,8 @@ def GetRegressor(model_path):
             return LinearRegressor(model_path)
         elif mt == "xgboost":
             return XGBoostRegressor(model_path)
+        elif mt == "mingpu":
+            return MinGpuRecommenderCaller()
 #        elif mt == "arise":
 #            return AriseRegressor(model_path)
         else:

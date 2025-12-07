@@ -12,7 +12,7 @@ authors = [
 description = "A package of Estimators for Large Language Model Training."
 license = {text = "Apache-2.0"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
@@ -25,14 +25,15 @@ dependencies = [
   "peft",
   "setuptools",
   "fire",
-  "pandas==2.2.0rc0",
+  "pandas",
   "xgboost",
   "scikit-learn<1.6.0",
   "gradio",
   "datasets",
   "dataclass-wizard",
   "uvicorn",
- # "arise-predictions"
+  "ado-core",
+  "ado-autoconf",
 ]
 
 [project.urls]
