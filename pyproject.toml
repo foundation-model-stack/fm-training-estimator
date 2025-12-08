@@ -12,7 +12,7 @@ authors = [
 description = "A package of Estimators for Large Language Model Training."
 license = {text = "Apache-2.0"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
@@ -32,7 +32,8 @@ dependencies = [
   "datasets",
   "dataclass-wizard",
   "uvicorn",
-  "arise-predictions==1.0.2"
+  "ado-core",
+  "ado-autoconf",
 ]
 
 [project.urls]
